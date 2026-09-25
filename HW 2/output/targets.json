@@ -1,0 +1,160 @@
+{
+  "run_id": "20260917T162256",
+  "generated_at": "2026-09-17T17:04:46",
+  "query": "Find 3 good customer targets for this company and draft outreach emails.",
+  "seller": {
+    "name": "BuyScout.ai (operated by NetPrism Inc.)",
+    "website": "https://buyscout.ai"
+  },
+  "ideal_customer_profile": [
+    "Runs a live Shopify storefront, confirmed by platform signals.",
+    "Sells a broad or educational catalog where shoppers may need help choosing products, variants, routines, compatibility, or bundles.",
+    "Has subscriptions, kits, bundles, or cross-sell potential that could support higher basket value.",
+    "Shows an active direct-to-consumer operation with clear customer-support or contact pathways.",
+    "Is not a competitor, marketplace, agency, SaaS company, parked site, or household-name enterprise account.",
+    "Is reachable through a published business email or a clearly identified contact channel."
+  ],
+  "rejected_candidates": [
+    "Mate Precision Technologies \u2014 rejected because the site is an industrial metalworking manufacturer rather than a relevant Shopify DTC ecommerce brand; no Shopify signal was detected.",
+    "Wildwonder \u2014 rejected because the page load returned no usable site text, internal links, platform signal, product evidence, or published contact address, so it could not be qualified."
+  ],
+  "targets": [
+    {
+      "run_id": "20260917T162256",
+      "generated_at": "2026-09-17T17:04:46",
+      "company_name": "OSEA Malibu",
+      "website": "https://oseamalibu.com",
+      "what_they_sell": "Seaweed-powered clean skincare and body-care products, including oils, moisturizers, cleansers, serums, sunscreens, sets, travel sizes, and subscriptions.",
+      "why_good_fit": "OSEA has a large, education-heavy skincare catalog organized by category and skin concern, plus a routine quiz, product sets, subscriptions, and customer support. Shoppers may need guidance on ingredients, concerns, routines, and which products to combine.",
+      "fit_signals": [
+        "Shopify storefront detected.",
+        "Catalog spans face care, body care, cleansers, serums, sunscreens, travel sizes, gifts, and sets.",
+        "Site organizes products by concerns including anti-aging, brightening, blemishes/oily skin, dry skin, sensitive skin, and pregnancy/postpartum.",
+        "Offers a 'Build Your OSEA Malibu Routine' skin quiz.",
+        "Offers subscriptions with 10% savings and skip/edit/cancel flexibility.",
+        "Publishes customer-support and skincare-studio email addresses.",
+        "Family-owned and mother-and-daughter led, according to the About page."
+      ],
+      "size_estimate": "Established, multi-channel clean-beauty brand with a sizeable catalog, subscription program, retail presence, and a dedicated customer-care operation; likely a Growth or Pro fit rather than a very small Starter account.",
+      "is_competitor": false,
+      "is_household_name": false,
+      "disqualifiers_checked": [
+        "Shopify confirmed on homepage and About/Contact pages.",
+        "Live ecommerce catalog confirmed.",
+        "Not an AI shopping, chatbot, support-automation, or ecommerce-app vendor based on pages read.",
+        "Not an agency, marketplace, directory, or SaaS company.",
+        "Published business emails found.",
+        "No evidence of a competing AI Store Agent found on pages read."
+      ],
+      "contacts": [
+        {
+          "name": null,
+          "role": "Customer Care",
+          "email": "support@oseamalibu.com",
+          "source_url": "https://oseamalibu.com/pages/contact-osea"
+        },
+        {
+          "name": null,
+          "role": "Skincare Studio",
+          "email": "skincarestudio@oseamalibu.com",
+          "source_url": "https://oseamalibu.com/pages/contact-osea"
+        }
+      ],
+      "best_email": "skincarestudio@oseamalibu.com",
+      "evidence_urls": [
+        "https://oseamalibu.com",
+        "https://oseamalibu.com/pages/about-us",
+        "https://oseamalibu.com/pages/contact-osea"
+      ]
+    },
+    {
+      "run_id": "20260917T162256",
+      "generated_at": "2026-09-17T17:04:46",
+      "company_name": "Pela",
+      "website": "https://pelacase.com",
+      "what_they_sell": "Compostable phone cases and related tech accessories, including cases for many Apple, Google, and Samsung models, AirPod cases, watch bands, straps, grips, wallets, cables, and MagSafe accessories.",
+      "why_good_fit": "Pela's catalog requires device compatibility guidance across many phone generations and brands, while also offering numerous design collections and complementary accessories. A conversational product finder could reduce model-selection mistakes and support case-plus-accessory bundles.",
+      "fit_signals": [
+        "Shopify storefront detected.",
+        "Large compatibility-led catalog covering Apple, Google, and Samsung devices.",
+        "Site includes model-specific navigation for numerous iPhone, Pixel, and Galaxy generations.",
+        "Offers phone cases, AirPod cases, watch bands, straps, grips, card holders, charging cables, and MagSafe accessories.",
+        "Offers custom or 'Make Your Own Case' products and artist/design collections.",
+        "Homepage claims the brand is loved by 2+ million people globally; treated as a company claim.",
+        "Published hello@pelacase.com address on Contact page."
+      ],
+      "size_estimate": "Scaled DTC accessories brand with broad device coverage, international currency options, multiple accessory categories, and a substantial customer base; likely a Pro or Scale conversation, though enterprise qualification would need traffic data.",
+      "is_competitor": false,
+      "is_household_name": false,
+      "disqualifiers_checked": [
+        "Shopify confirmed on homepage and Contact page.",
+        "Live product catalog and active promotions confirmed.",
+        "Not an AI shopping, chatbot, support-automation, or ecommerce-app vendor based on pages read.",
+        "Not an agency, marketplace, directory, or SaaS company.",
+        "Published business email found.",
+        "No competing AI Store Agent found on pages read."
+      ],
+      "contacts": [
+        {
+          "name": null,
+          "role": "General contact",
+          "email": "hello@pelacase.com",
+          "source_url": "https://pelacase.com/pages/contact"
+        }
+      ],
+      "best_email": "hello@pelacase.com",
+      "evidence_urls": [
+        "https://pelacase.com",
+        "https://pelacase.com/pages/contact"
+      ]
+    },
+    {
+      "run_id": "20260917T162256",
+      "generated_at": "2026-09-17T17:04:46",
+      "company_name": "COCOLAB / Cocofloss",
+      "website": "https://cocofloss.com",
+      "what_they_sell": "Dentist-designed oral-care products including textured dental floss, refills, toothbrushes, toothpaste, whitening products, kids products, bundles, gifts, and subscription options.",
+      "why_good_fit": "COCOLAB combines multiple product systems, flavors, refill formats, bundles, and educational positioning. Its quiz, subscription products, and product-choice questions make it a strong fit for guided discovery, routine building, and cross-selling.",
+      "fit_signals": [
+        "Shopify storefront detected.",
+        "Catalog includes Cocofloss, Cocoshine, Cocobrush, refills, kids products, gifts, and bundles.",
+        "Offers a product quiz: 'Your smile care starts here.'",
+        "Offers spool-and-dispenser versus refill variants and recurring subscription options.",
+        "Product range includes multiple flavors and oral-care formats, creating comparison and routine-building needs.",
+        "Founded by two sisters, including a dentist and an artist, according to the About page.",
+        "Published customer-care, partnerships, press, and dental-professional emails."
+      ],
+      "size_estimate": "Growing specialist DTC oral-care brand with a multi-product system, subscriptions, partnerships, and a dedicated contact structure; likely a Starter-to-Growth or Pro fit depending on traffic.",
+      "is_competitor": false,
+      "is_household_name": false,
+      "disqualifiers_checked": [
+        "Shopify confirmed on homepage, About, and Contact pages.",
+        "Live ecommerce catalog confirmed.",
+        "Not an AI shopping, chatbot, support-automation, or ecommerce-app vendor based on pages read.",
+        "Not an agency, marketplace, directory, or SaaS company.",
+        "Published business emails found.",
+        "No competing AI Store Agent found on pages read."
+      ],
+      "contacts": [
+        {
+          "name": null,
+          "role": "Partnerships & Collabs",
+          "email": "partnerships@cocolab.com",
+          "source_url": "https://cocofloss.com/pages/contact"
+        },
+        {
+          "name": null,
+          "role": "Customer Care",
+          "email": "help@cocolab.com",
+          "source_url": "https://cocofloss.com/pages/contact"
+        }
+      ],
+      "best_email": "partnerships@cocolab.com",
+      "evidence_urls": [
+        "https://cocofloss.com",
+        "https://cocofloss.com/pages/about",
+        "https://cocofloss.com/pages/contact"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+[
+  {
+    "transaction_id": "R2",
+    "included_income_statement": "yes",
+    "amount_used_in_income_statement": 465.0,
+    "confidence": "high",
+    "evidence": [
+      "bank_statement_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ]
+  },
+  {
+    "transaction_id": "R6",
+    "included_income_statement": "no",
+    "amount_used_in_income_statement": 0,
+    "confidence": "high",
+    "evidence": [
+      "receipt_amazon_headphones.pdf",
+      "credit_card_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ]
+  },
+  {
+    "transaction_id": "R7",
+    "included_income_statement": "yes",
+    "amount_used_in_income_statement": 156.0,
+    "confidence": "low",
+    "evidence": [
+      "credit_card_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ]
+  }
+]

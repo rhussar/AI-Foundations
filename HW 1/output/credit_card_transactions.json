@@ -1,0 +1,118 @@
+[
+  {
+    "Date": "2026-01-04",
+    "Merchant": "AMAZON MKTPLACE",
+    "Amount_USD": 89.99,
+    "Classification": "personal",
+    "Expense category": null,
+    "fields_not_found": [
+      "Expense category"
+    ]
+  },
+  {
+    "Date": "2026-01-06",
+    "Merchant": "PARK TOOL CO",
+    "Amount_USD": 127.4,
+    "Classification": "business",
+    "Expense category": "Tools",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-09",
+    "Merchant": "INSTACART *WHOLE FOODS",
+    "Amount_USD": 64.22,
+    "Classification": "personal",
+    "Expense category": null,
+    "fields_not_found": [
+      "Expense category"
+    ]
+  },
+  {
+    "Date": "2026-01-11",
+    "Merchant": "STAPLES 03418 NH",
+    "Amount_USD": 43.17,
+    "Classification": "business",
+    "Expense category": "Office Supplies",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-13",
+    "Merchant": "EBAY O*17-8844-2291",
+    "Amount_USD": 425.0,
+    "Classification": "personal",
+    "Expense category": null,
+    "fields_not_found": [
+      "Expense category"
+    ]
+  },
+  {
+    "Date": "2026-01-14",
+    "Merchant": "REI #142 NEW HAVEN",
+    "Amount_USD": 156.0,
+    "Classification": "personal",
+    "Expense category": null,
+    "fields_not_found": [
+      "Expense category"
+    ]
+  },
+  {
+    "Date": "2026-01-16",
+    "Merchant": "NETFLIX.COM",
+    "Amount_USD": 15.49,
+    "Classification": "personal",
+    "Expense category": null,
+    "fields_not_found": [
+      "Expense category"
+    ]
+  },
+  {
+    "Date": "2026-01-17",
+    "Merchant": "SPEEDY COURIER NH",
+    "Amount_USD": 28.0,
+    "Classification": "business",
+    "Expense category": "Shipping",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-19",
+    "Merchant": "HOME DEPOT #4602",
+    "Amount_USD": 67.12,
+    "Classification": "business",
+    "Expense category": "Hardware",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-21",
+    "Merchant": "YALE PRINTING SVCS",
+    "Amount_USD": 89.0,
+    "Classification": "business",
+    "Expense category": "Office Supplies",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-23",
+    "Merchant": "SHELL OIL 574421",
+    "Amount_USD": 52.1,
+    "Classification": "personal",
+    "Expense category": null,
+    "fields_not_found": [
+      "Expense category"
+    ]
+  },
+  {
+    "Date": "2026-01-25",
+    "Merchant": "NEW HAVEN BIKE PARTS",
+    "Amount_USD": 218.4,
+    "Classification": "business",
+    "Expense category": "Bike Parts",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-29",
+    "Merchant": "AMAZON WEB SERVICES",
+    "Amount_USD": 19.99,
+    "Classification": "business",
+    "Expense category": "Software",
+    "fields_not_found": []
+  }
+]

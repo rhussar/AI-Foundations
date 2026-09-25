@@ -1,0 +1,3 @@
+pydantic-ai-slim[openai,duckduckgo]>=2.44
+playwright>=1.63
+python-dotenv>=1.0

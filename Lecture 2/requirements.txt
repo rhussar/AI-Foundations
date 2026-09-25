@@ -1,0 +1,6 @@
+dash>=2.18
+openai>=1.50
+pandas>=2.2
+plotly>=5.24
+pypdf>=5.0
+python-dotenv>=1.0

@@ -1,0 +1,172 @@
+[
+  {
+    "Date": "2026-01-02",
+    "Description": "CHECK #1042 \u2014 Crown Street Properties (rent)",
+    "Amount_USD": 1800.0,
+    "Classification": "business",
+    "Direction": "debit",
+    "Accounting label": "Operating Expense",
+    "Expense type": "Rent/Utilities",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-03",
+    "Description": "POS DEPOSIT \u2014 Square *Walk-in tune-ups",
+    "Amount_USD": 420.0,
+    "Classification": "business",
+    "Direction": "credit",
+    "Accounting label": "Revenue",
+    "Expense type": "Sales Revenue",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-05",
+    "Description": "ACH DEPOSIT \u2014 Yale Health employee bike svc",
+    "Amount_USD": 1150.0,
+    "Classification": "business",
+    "Direction": "credit",
+    "Accounting label": "Revenue",
+    "Expense type": "Sales Revenue",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-07",
+    "Description": "ONLINE PMT \u2014 Eversource electric",
+    "Amount_USD": 186.42,
+    "Classification": "business",
+    "Direction": "debit",
+    "Accounting label": "Operating Expense",
+    "Expense type": "Rent/Utilities",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-08",
+    "Description": "POS DEPOSIT \u2014 Square *Brake jobs / chains",
+    "Amount_USD": 315.0,
+    "Classification": "business",
+    "Direction": "credit",
+    "Accounting label": "Revenue",
+    "Expense type": "Sales Revenue",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-10",
+    "Description": "TRANSFER TO SAVINGS ****3301 \u2014 owner draw (personal)",
+    "Amount_USD": 900.0,
+    "Classification": "personal",
+    "Direction": "debit",
+    "Accounting label": "Owner Draw",
+    "Expense type": "Owner Draw",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-12",
+    "Description": "ACH DEPOSIT \u2014 City of NH fleet maintenance inv #884",
+    "Amount_USD": 2400.0,
+    "Classification": "business",
+    "Direction": "credit",
+    "Accounting label": "Revenue",
+    "Expense type": "Sales Revenue",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-14",
+    "Description": "DEBIT CARD \u2014 Comcast business internet",
+    "Amount_USD": 89.99,
+    "Classification": "business",
+    "Direction": "debit",
+    "Accounting label": "Operating Expense",
+    "Expense type": "Rent/Utilities",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-15",
+    "Description": "POS DEPOSIT \u2014 Cash & card walk-ins (see owner notes)",
+    "Amount_USD": 560.0,
+    "Classification": "business",
+    "Direction": "credit",
+    "Accounting label": "Revenue",
+    "Expense type": "Sales Revenue",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-18",
+    "Description": "CHECK #1043 \u2014 New Haven Bike Parts wholesale",
+    "Amount_USD": 742.18,
+    "Classification": "business",
+    "Direction": "debit",
+    "Accounting label": "Operating Expense",
+    "Expense type": "Bike Parts",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-20",
+    "Description": "ACH DEPOSIT \u2014 St. Raphael custom build final pmt",
+    "Amount_USD": 1850.0,
+    "Classification": "business",
+    "Direction": "credit",
+    "Accounting label": "Revenue",
+    "Expense type": "Sales Revenue",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-22",
+    "Description": "ATM WITHDRAWAL \u2014 Jordan Lee personal cash",
+    "Amount_USD": 200.0,
+    "Classification": "personal",
+    "Direction": "debit",
+    "Accounting label": "Owner Draw",
+    "Expense type": "Owner Draw",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-24",
+    "Description": "POS DEPOSIT \u2014 Square weekend rush jobs",
+    "Amount_USD": 980.0,
+    "Classification": "business",
+    "Direction": "credit",
+    "Accounting label": "Revenue",
+    "Expense type": "Sales Revenue",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-27",
+    "Description": "DEBIT CARD \u2014 State Farm business liability premium",
+    "Amount_USD": 214.0,
+    "Classification": "business",
+    "Direction": "debit",
+    "Accounting label": "Operating Expense",
+    "Expense type": "Insurance",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-28",
+    "Description": "ACH DEPOSIT \u2014 Westville PTO bike safety event",
+    "Amount_USD": 570.0,
+    "Classification": "business",
+    "Direction": "credit",
+    "Accounting label": "Revenue",
+    "Expense type": "Sales Revenue",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-30",
+    "Description": "MONTHLY SERVICE FEE",
+    "Amount_USD": 15.0,
+    "Classification": "business",
+    "Direction": "debit",
+    "Accounting label": "Operating Expense",
+    "Expense type": "Bank Fees",
+    "fields_not_found": []
+  },
+  {
+    "Date": "2026-01-31",
+    "Description": "DEBIT CARD \u2014 Park Tool vendor portal",
+    "Amount_USD": 344.55,
+    "Classification": "business",
+    "Direction": "debit",
+    "Accounting label": "Operating Expense",
+    "Expense type": "Tools",
+    "fields_not_found": []
+  }
+]

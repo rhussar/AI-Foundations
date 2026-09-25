@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Dashboard</title>
+<style>
+  :root {
+    --page: #f7f8fa; --card: #fff; --line: #e5e7eb;
+    --text: #111827; --muted: #5b6472; --faint: #8b93a1;
+    --accent: #4f46e5; --ok: #0a7a4a; --warn: #9a5b06;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; overflow: hidden; }
+  body {
+    background: var(--page); color: var(--text);
+    font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1, h2, h3 { margin: 0; letter-spacing: -.01em; }
+  p { margin: 0; }
+  h4 { margin: 0 0 7px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--faint); font-weight: 600; }
+  h4.spaced { margin-top: 16px; }
+  ul { margin: 8px 0 0; padding-left: 17px; color: var(--muted); font-size: 13px; }
+  li { margin: 3px 0; }
+  .muted { color: var(--muted); }
+  .faint { color: var(--faint); }
+
+  #glow {
+    position: fixed; top: 0; left: 0; width: 540px; height: 540px; margin: -270px 0 0 -270px;
+    z-index: 0; pointer-events: none; opacity: 0; transition: opacity .4s ease; will-change: transform;
+    background: radial-gradient(circle closest-side, rgba(79,70,229,.13), rgba(79,70,229,.05) 45%, transparent 72%);
+  }
+  body.live #glow { opacity: 1; }
+
+  .shell { position: relative; z-index: 1; height: 100%; display: grid; grid-template-columns: 208px 1fr; }
+
+  /* sidebar tabs */
+  .side { background: var(--card); border-right: 1px solid var(--line); padding: 18px 12px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 9px; padding: 0 8px 20px; }
+  .mark { width: 24px; height: 24px; border-radius: 6px; background: var(--accent); color: #fff;
+           display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+  .brand b { font-size: 14px; font-weight: 600; }
+  .tabs { display: flex; flex-direction: column; gap: 2px; }
+  .tabs button {
+    font: inherit; font-size: 13px; text-align: left; color: var(--muted); background: none;
+    border: 0; border-radius: 6px; padding: 8px 9px; cursor: pointer;
+  }
+  .tabs button:hover { background: var(--page); color: var(--text); }
+  .tabs button[aria-selected="true"] { background: #eef2ff; color: var(--accent); font-weight: 500; }
+  .side-foot { margin-top: auto; padding: 0 9px; font-size: 11.5px; color: var(--faint); }
+
+  /* header + optional sub bar */
+  main { min-width: 0; display: flex; flex-direction: column; }
+  .head { height: 53px; flex: none; display: flex; align-items: center; justify-content: space-between;
+           gap: 16px; padding: 0 24px; border-bottom: 1px solid var(--line); }
+  .head h1 { font-size: 15px; font-weight: 600; }
+  .head .meta { font-size: 12.5px; color: var(--faint); }
+  .subbar { flex: none; display: flex; gap: 6px; align-items: center; padding: 9px 24px;
+             background: var(--card); border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .subbar .label { font-size: 11.5px; color: var(--faint); margin-right: 4px; }
+  .pick {
+    font: inherit; font-size: 13px; color: var(--muted); background: var(--page);
+    border: 1px solid var(--line); border-radius: 7px; padding: 5px 12px; cursor: pointer; white-space: nowrap;
+  }
+  .pick:hover { color: var(--text); border-color: #d3d7de; }
+  .pick.on { background: #eef2ff; border-color: #c7cdfb; color: var(--accent); font-weight: 500; }
+
+  /* views fill the screen; only long prose scrolls, never the page */
+  .view { flex: 1; min-height: 0; padding: 18px 24px; display: flex; flex-direction: column; gap: 14px; }
+  [hidden] { display: none !important; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; min-height: 0; }
+  .scroller { overflow: auto; }
+
+  /* overview */
+  .stats { flex: none; background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+            display: grid; grid-template-columns: repeat(4, 1fr); }
+  .stat { padding: 13px 18px; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat b { display: block; font-size: 21px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 12.5px; color: var(--faint); }
+  .seller { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 270px; gap: 26px; }
+  .seller > div { min-height: 0; overflow: auto; }
+  .seller h2 { font-size: 17px; font-weight: 600; }
+  .lede { color: var(--muted); font-size: 13.5px; margin-top: 6px; }
+
+  .row { display: flex; gap: 12px; justify-content: space-between; padding: 6px 0;
+          font-size: 13px; border-bottom: 1px solid var(--line); }
+  .row-key { color: var(--faint); flex: none; }
+  .customers { font-size: 12.5px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
+
+  /* customers */
+  .cust { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .cust-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+  .cust h2 { font-size: 17px; font-weight: 600; }
+  .domain { font-size: 12.5px; color: var(--faint); }
+  .domain:hover { color: var(--accent); }
+  .cust .lede { margin-bottom: 16px; }
+  .tag { font-size: 11.5px; padding: 3px 8px; border-radius: 5px; background: var(--page);
+          border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .tag-ok { color: var(--ok); border-color: #bbf0d4; background: #f0fdf6; }
+  .tag-warn { color: var(--warn); border-color: #f5dfae; background: #fffaf0; margin-left: 7px; }
+  .sources { margin-top: 12px; font-size: 12px; color: var(--faint); }
+  .sources a { color: var(--faint); }
+  .sources a:hover { color: var(--accent); }
+
+  .draft { display: flex; flex-direction: column; background: #fcfcfd; }
+  .draft-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; }
+  .draft h4 { margin: 0; display: flex; align-items: center; }
+  .draft .row { justify-content: flex-start; gap: 0; }
+  .draft .row .row-key { width: 66px; }
+  .copy { font: inherit; font-size: 12px; color: var(--muted); background: var(--card);
+           border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  .copy:hover { border-color: var(--accent); color: var(--accent); }
+  .body { margin-top: 13px; flex: 1; min-height: 0; font-size: 13.5px; line-height: 1.65; color: #29303d; }
+
+  /* how this was made */
+  .run { display: flex; flex-wrap: wrap; gap: 22px; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .run div b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 900px) {
+    .seller, .cust { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(2) { border-right: none; }
+    .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    html, body { overflow: auto; }
+    .shell { height: auto; min-height: 100%; }
+    .view { overflow: visible; }
+  }
+  @media (max-width: 720px) {
+    .shell { grid-template-columns: 1fr; }
+    .side { flex-direction: row; align-items: center; gap: 12px; padding: 10px 14px; overflow-x: auto; }
+    .brand { padding: 0; }
+    .tabs { flex-direction: row; }
+    .side-foot { display: none; }
+    .head, .subbar, .view { padding-left: 14px; padding-right: 14px; }
+    .stats { grid-template-columns: 1fr; }
+    .stat { border-right: none; border-bottom: 1px solid var(--line); }
+  }
+  @media (prefers-reduced-motion: reduce) { #glow { display: none; } }
+</style>
+</head>
+<body>
+<div id="glow"></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><div class="mark">B</div><b>BuyScout</b></div>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
+      <button role="tab" data-tab="customers" aria-selected="false">Customers</button>
+      <button role="tab" data-tab="how" aria-selected="false">How this was made</button>
+    </div>
+    <div class="side-foot">2026-09-17 · run 20260917T162256</div>
+  </aside>
+
+  <main>
+    <header class="head">
+      <h1 id="title">Overview</h1>
+      <div class="meta">3 targets · 3 drafts awaiting review</div>
+    </header>
+
+    <div class="subbar" id="subbar" hidden>
+      <span class="label">Customer</span>
+      <button class="pick on" data-cust="1">OSEA Malibu</button><button class="pick" data-cust="2">Pela</button><button class="pick" data-cust="3">COCOLAB / Cocofloss</button>
+    </div>
+
+    <!-- Overview: our company -->
+    <div class="view" id="view-overview" role="tabpanel">
+      <section class="stats">
+        <div class="stat"><b>3</b><span>Qualified targets</span></div>
+        <div class="stat"><b>3</b><span>Emails drafted</span></div>
+        <div class="stat"><b>5</b><span>Contacts found</span></div>
+        <div class="stat"><b>2</b><span>Candidates rejected</span></div>
+      </section>
+      <section class="card seller">
+        <div>
+          <h2>BuyScout.ai (operated by NetPrism Inc.)</h2>
+          <p class="lede">BuyScout sells an AI Store Agent for Shopify merchants that answers shopper questions, recommends products, increases basket size, and automates routine order support across storefront and messaging channels.</p>
+          <h4 class="spaced">What we offer</h4>
+          <ul><li>AI Store Agent embedded in Shopify storefronts with no-code, one-minute setup.</li><li>Website chat for product discovery, comparisons, recommendations, size/fit guidance, upsells, cross-sells, discounts, and FAQs.</li><li>Support automation for order tracking, delivery estimates, returns/refunds, troubleshooting, order modifications, subscriptions, and human handoff.</li><li>Multichannel shopping assistance through WhatsApp, Instagram, Messenger, TikTok, SMS, and website chat.</li><li>AI voice calls for product discovery, product questions, comparisons, and verified order support.</li></ul>
+          <h4 class="spaced">Who we sell to</h4>
+          <ul><li>Shopify merchants, especially growing stores under or around 300,000 monthly visitors.</li><li>Direct-to-consumer and online retail brands in apparel and fashion, beauty and skincare, electronics, home and garden, health and wellness, sports and outdoors, jewelry and accessories, pets, baby and kids, and food and beverages.</li><li>Product categories with high-consideration purchases, fit/compatibility questions, product education needs, or meaningful cross-sell potential.</li></ul>
+        </div>
+        <div>
+          <h4>Details</h4>
+          <div class="row"><span class="row-key">Website</span><a href="https://buyscout.ai" target="_blank" rel="noopener">buyscout.ai</a></div>
+          <div class="row"><span class="row-key">Platform</span><span>Shopify</span></div>
+          <div class="row"><span class="row-key">Customers</span><span>12 named</span></div>
+          <p class="customers">NightCap, Scott Barnes Cosmetics, LHS, MASAMI, Chau Sáenz, LUNAESCENT, Flavor Expedition Co., Privileged Shoes</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Customers: one panel per target, picked from the bar above -->
+    <div class="view" id="view-customers" role="tabpanel" hidden>
+      
+<div class="cust" id="cust-1">
+  <section class="card scroller">
+    <div class="cust-top">
+      <div>
+        <h2>OSEA Malibu</h2>
+        <a class="domain" href="https://oseamalibu.com" target="_blank" rel="noopener">oseamalibu.com</a>
+      </div>
+      <span class="tag tag-ok">Shopify</span>
+    </div>
+    <p class="lede">Seaweed-powered clean skincare and body-care products, including oils, moisturizers, cleansers, serums, sunscreens, sets, travel sizes, and subscriptions.</p>
+
+    <h4>Why they fit</h4>
+    <p class="muted">OSEA has a large, education-heavy skincare catalog organized by category and skin concern, plus a routine quiz, product sets, subscriptions, and customer support. Shoppers may need guidance on ingredients, concerns, routines, and which products to combine.</p>
+    <ul><li>Shopify storefront detected.</li><li>Offers a &#x27;Build Your OSEA Malibu Routine&#x27; skin quiz.</li><li>Publishes customer-support and skincare-studio email addresses.</li></ul>
+
+    <h4 class="spaced">Contact</h4>
+    <div class="row">
+              <span class="row-key">Customer Care</span>
+              <a href="mailto:support@oseamalibu.com">support@oseamalibu.com</a>
+            </div><div class="row">
+              <span class="row-key">Skincare Studio</span>
+              <a href="mailto:skincarestudio@oseamalibu.com">skincarestudio@oseamalibu.com</a>
+            </div>
+    <p class="sources">Pages read: <a href="https://oseamalibu.com" target="_blank" rel="noopener">home</a> · <a href="https://oseamalibu.com/pages/about-us" target="_blank" rel="noopener">pages/about-us</a> · <a href="https://oseamalibu.com/pages/contact-osea" target="_blank" rel="noopener">pages/contact-osea</a></p>
+  </section>
+
+  <section class="card draft">
+    <div class="draft-top">
+      <h4>Drafted email <span class="tag tag-warn">Not sent</span></h4>
+      <button class="copy" data-copy="body-1">Copy</button>
+    </div>
+    <div class="row"><span class="row-key">To</span><span>skincarestudio@oseamalibu.com</span></div>
+    <div class="row"><span class="row-key">Subject</span><span>Helping shoppers build an OSEA routine</span></div>
+    <div class="body scroller" id="body-1">Hi OSEA team,<br><br>Your site guides shoppers across face, body, concern-based, pregnancy and postpartum, fragrance-free, and travel categories, alongside a skin quiz and subscription options. That breadth can make it difficult for a shopper to know which products belong in a routine—or which sets and add-ons fit their needs.<br><br>BuyScout.ai adds a Shopify Store Agent that can answer product questions, recommend routines, compare options, and suggest relevant cross-sells in the storefront. Beauty is one of our strongest use cases, with customer stories reporting higher multi-product baskets.<br><br>Would a 15-minute conversation about OSEA’s product-discovery experience be useful?<br><br>BuyScout.ai team</div>
+  </section>
+</div>
+<div class="cust" id="cust-2" hidden>
+  <section class="card scroller">
+    <div class="cust-top">
+      <div>
+        <h2>Pela</h2>
+        <a class="domain" href="https://pelacase.com" target="_blank" rel="noopener">pelacase.com</a>
+      </div>
+      <span class="tag tag-ok">Shopify</span>
+    </div>
+    <p class="lede">Compostable phone cases and related tech accessories, including cases for many Apple, Google, and Samsung models, AirPod cases, watch bands, straps, grips, wallets, cables, and MagSafe accessories.</p>
+
+    <h4>Why they fit</h4>
+    <p class="muted">Pela&#x27;s catalog requires device compatibility guidance across many phone generations and brands, while also offering numerous design collections and complementary accessories. A conversational product finder could reduce model-selection mistakes and support case-plus-accessory bundles.</p>
+    <ul><li>Shopify storefront detected.</li><li>Published hello@pelacase.com address on Contact page.</li><li>Large compatibility-led catalog covering Apple, Google, and Samsung devices.</li></ul>
+
+    <h4 class="spaced">Contact</h4>
+    <div class="row">
+              <span class="row-key">General contact</span>
+              <a href="mailto:hello@pelacase.com">hello@pelacase.com</a>
+            </div>
+    <p class="sources">Pages read: <a href="https://pelacase.com" target="_blank" rel="noopener">home</a> · <a href="https://pelacase.com/pages/contact" target="_blank" rel="noopener">pages/contact</a></p>
+  </section>
+
+  <section class="card draft">
+    <div class="draft-top">
+      <h4>Drafted email <span class="tag tag-warn">Not sent</span></h4>
+      <button class="copy" data-copy="body-2">Copy</button>
+    </div>
+    <div class="row"><span class="row-key">To</span><span>hello@pelacase.com</span></div>
+    <div class="row"><span class="row-key">Subject</span><span>Reducing phone-model choice friction</span></div>
+    <div class="body scroller" id="body-2">Hi Pela team,<br><br>Pela’s storefront covers a wide range of iPhone, Google Pixel, and Samsung Galaxy models, then extends into AirPod cases, straps, grips, wallets, cables, and MagSafe accessories. That gives shoppers plenty of choice, but also creates compatibility questions and opportunities to miss a useful add-on.<br><br>BuyScout.ai adds a Shopify Store Agent that can help shoppers identify the right model, compare case options, and recommend compatible accessories during the buying journey. Electronics and accessories are a core BuyScout.ai use case, including reported gains from product attachment in a customer story.<br><br>Would you be open to a 15-minute discussion?<br><br>BuyScout.ai team</div>
+  </section>
+</div>
+<div class="cust" id="cust-3" hidden>
+  <section class="card scroller">
+    <div class="cust-top">
+      <div>
+        <h2>COCOLAB / Cocofloss</h2>
+        <a class="domain" href="https://cocofloss.com" target="_blank" rel="noopener">cocofloss.com</a>
+      </div>
+      <span class="tag tag-ok">Shopify</span>
+    </div>
+    <p class="lede">Dentist-designed oral-care products including textured dental floss, refills, toothbrushes, toothpaste, whitening products, kids products, bundles, gifts, and subscription options.</p>
+
+    <h4>Why they fit</h4>
+    <p class="muted">COCOLAB combines multiple product systems, flavors, refill formats, bundles, and educational positioning. Its quiz, subscription products, and product-choice questions make it a strong fit for guided discovery, routine building, and cross-selling.</p>
+    <ul><li>Shopify storefront detected.</li><li>Offers a product quiz: &#x27;Your smile care starts here.&#x27;</li><li>Published customer-care, partnerships, press, and dental-professional emails.</li></ul>
+
+    <h4 class="spaced">Contact</h4>
+    <div class="row">
+              <span class="row-key">Partnerships &amp; Collabs</span>
+              <a href="mailto:partnerships@cocolab.com">partnerships@cocolab.com</a>
+            </div><div class="row">
+              <span class="row-key">Customer Care</span>
+              <a href="mailto:help@cocolab.com">help@cocolab.com</a>
+            </div>
+    <p class="sources">Pages read: <a href="https://cocofloss.com" target="_blank" rel="noopener">home</a> · <a href="https://cocofloss.com/pages/about" target="_blank" rel="noopener">pages/about</a> · <a href="https://cocofloss.com/pages/contact" target="_blank" rel="noopener">pages/contact</a></p>
+  </section>
+
+  <section class="card draft">
+    <div class="draft-top">
+      <h4>Drafted email <span class="tag tag-warn">Not sent</span></h4>
+      <button class="copy" data-copy="body-3">Copy</button>
+    </div>
+    <div class="row"><span class="row-key">To</span><span>partnerships@cocolab.com</span></div>
+    <div class="row"><span class="row-key">Subject</span><span>Making oral-care product choice easier</span></div>
+    <div class="body scroller" id="body-3">Hi COCOLAB team,<br><br>Your storefront spans Cocofloss, Cocoshine, Cocobrush, refills, kids products, gifts, flavor variants, and subscription options—and it also invites shoppers to take a smile-care quiz. That breadth can leave shoppers wondering where to start, which format they need, or what to add to a routine.<br><br>BuyScout.ai gives Shopify stores a conversational Store Agent that can answer product questions, recommend routines, compare options, and surface relevant bundles or refills. Beauty and wellness are strong BuyScout.ai use cases, with customer stories reporting improved multi-product baskets.<br><br>Would a short 15-minute call be worthwhile?<br><br>BuyScout.ai team</div>
+  </section>
+</div>
+    </div>
+
+    <!-- How this was made -->
+    <div class="view" id="view-how" role="tabpanel" hidden>
+      <section class="card scroller">
+        <h4>Run 20260917T162256 · gpt-5.6</h4>
+        <div class="run">
+          <div><b>5</b> iterations</div>
+          <div><b>15</b> pages read</div>
+          <div><b>1</b> web searches</div>
+          <div><b>137.28s</b> runtime</div>
+          <div><b>96,047</b> tokens in</div>
+        </div>
+        <h4 class="spaced">Screen applied</h4>
+        <ul><li>Runs a live Shopify storefront, confirmed by platform signals.</li><li>Sells a broad or educational catalog where shoppers may need help choosing products, variants, routines, compatibility, or bundles.</li><li>Has subscriptions, kits, bundles, or cross-sell potential that could support higher basket value.</li><li>Shows an active direct-to-consumer operation with clear customer-support or contact pathways.</li></ul>
+        <h4 class="spaced">Rejected</h4>
+        <ul><li>Mate Precision Technologies — rejected because the site is an industrial metalworking manufacturer rather than a relevant Shopify DTC ecommerce brand; no Shopify signal was detected.</li><li>Wildwonder — rejected because the page load returned no usable site text, internal links, platform signal, product evidence, or published contact address, so it could not be qualified.</li></ul>
+        <p class="sources">Full loop recorded in output/audit_log.json</p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  var glow = document.getElementById('glow');
+  var tx = innerWidth / 2, ty = innerHeight / 2, cx = tx, cy = ty, live = false;
+  addEventListener('pointermove', function (ev) {
+    tx = ev.clientX; ty = ev.clientY;
+    if (!live) { cx = tx; cy = ty; live = true; document.body.classList.add('live'); }
+  }, { passive: true });
+  (function frame() {
+    cx += (tx - cx) * .15; cy += (ty - cy) * .15;
+    glow.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
+    requestAnimationFrame(frame);
+  })();
+
+  var TITLES = { overview: 'Overview', customers: 'Customers', how: 'How this was made' };
+  var tabs = [].slice.call(document.querySelectorAll('.tabs button'));
+  var subbar = document.getElementById('subbar');
+
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var name = btn.dataset.tab;
+      tabs.forEach(function (b) { b.setAttribute('aria-selected', String(b === btn)); });
+      ['overview', 'customers', 'how'].forEach(function (k) {
+        document.getElementById('view-' + k).hidden = (k !== name);
+      });
+      subbar.hidden = (name !== 'customers');
+      document.getElementById('title').textContent = TITLES[name];
+    });
+  });
+
+  var picks = [].slice.call(document.querySelectorAll('.pick'));
+  picks.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      picks.forEach(function (b) { b.classList.toggle('on', b === btn); });
+      picks.forEach(function (b) {
+        document.getElementById('cust-' + b.dataset.cust).hidden = (b !== btn);
+      });
+    });
+  });
+
+  document.querySelectorAll('.copy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      navigator.clipboard.writeText(document.getElementById(b.dataset.copy).innerText).then(function () {
+        b.textContent = 'Copied';
+        setTimeout(function () { b.textContent = 'Copy'; }, 1300);
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+{
+  "run_id": "20260917T162211",
+  "generated_at": "2026-09-17T17:04:46",
+  "query": "profile buyscout.ai quickly",
+  "company_name": "BuyScout.ai / NetPrism Inc.",
+  "website": "https://buyscout.ai",
+  "one_line_pitch": "BuyScout is an AI Store Agent for Shopify merchants that answers shopper questions, recommends products, supports orders, and helps increase ecommerce conversion and order value across multiple channels.",
+  "what_they_offer": [
+    "Website chat for proactive shopper guidance and product discovery",
+    "Product recommendations, product expertise, competitor comparison, smart upsells, cross-sells, and discount offers",
+    "Size and fit guidance using product measurements, variants, size charts, and shopper preferences",
+    "Customer support automation including order tracking, delivery estimates, returns and refunds, order modifications, subscriptions, troubleshooting, and human handoff",
+    "Multichannel support across WhatsApp, Instagram, Messenger, TikTok, SMS, and website chat",
+    "AI voice calls for product discovery, product questions, comparisons, and order support",
+    "AI virtual try-on",
+    "Merchant knowledge ingestion covering catalog, brand story, brand guide, policies, reviews, and industry knowledge",
+    "Shopify installation with a free starting plan"
+  ],
+  "target_customers": [
+    "Shopify merchants with ecommerce storefronts",
+    "Growing direct-to-consumer brands with product catalogs that benefit from guided selling",
+    "Apparel and fashion brands",
+    "Beauty and skincare brands",
+    "Electronics and gadget sellers",
+    "Home and garden brands",
+    "Health and wellness or health and safety brands",
+    "Sports and outdoors, jewelry and accessories, pets, baby and kids, food and beverages, and travel and luggage merchants",
+    "Stores seeking higher conversion, higher average order value, lower support costs, fewer abandoned carts, or fewer avoidable returns"
+  ],
+  "named_customers": [
+    "NightCap",
+    "Scott Barnes Cosmetics",
+    "LHS",
+    "MASAMI",
+    "Chau S\u00e1enz",
+    "LUNAESCENT",
+    "Flavor Expedition Co.",
+    "Privileged Shoes",
+    "American Heroes Coffee Company",
+    "SabertoothPro",
+    "Summerfield Candles",
+    "Saini Style Hub"
+  ],
+  "pricing_notes": "Free for stores under 10,000 monthly visitors, with 100 AI replies per month and core sales/support skills. Published paid tiers are Starter at $49/month for 25,000 monthly visitors and 500 AI replies; Growth at $129/month for 75,000 visitors and 1,500 replies; Pro at $249/month for 150,000 visitors and 3,000 replies; Scale at $499/month for 300,000 visitors and 6,000 replies. Enterprise is custom for stores above 300,000 monthly visitors. Annual billing is advertised at approximately 20% off, and paid plans include a 14-day money-back guarantee.",
+  "proof_points": [
+    "Claims to be trusted by 500+ brands.",
+    "Claims typical conversion lifts of 10\u201330% from guided selling.",
+    "Claims average order value increases of 15\u201325% through upsells and cross-sells.",
+    "Claims repetitive support tickets can be reduced by 41%.",
+    "Customer-story claims include NightCap increasing custom-order volume by 32%, Scott Barnes achieving 22% more baskets with three or more products, LHS resolving 78% of eligible inquiries without staff follow-up, and MASAMI generating 23% more multi-product attachment after AI consultation.",
+    "The site states that BuyScout is GDPR and AI Act compliant."
+  ],
+  "likely_direction": [
+    "Inference: BuyScout appears to be expanding from website chat into a broader omnichannel commerce agent, including social messaging, SMS, and voice.",
+    "Inference: The product direction emphasizes revenue generation as much as support automation, especially recommendations, upsells, cross-sells, fit guidance, and virtual try-on.",
+    "Inference: The published industry coverage and customer stories suggest a focus on specialized, consultation-heavy product categories where shoppers need education before purchase."
+  ],
+  "sales_angles": [
+    "Lead with guided selling for merchants whose products require comparison, fit, sizing, ingredients, compatibility, or customization explanations.",
+    "Use category-specific proof: beauty and haircare for routines and ingredient education; fashion for fit and styling; luggage/electronics for feature and compatibility comparisons; food and beverages for use-case recommendations.",
+    "Position the free-under-10K-visitors plan as a low-friction entry point for smaller Shopify brands, then frame paid tiers around traffic and AI-reply volume.",
+    "For growth-stage merchants, emphasize one agent covering conversion, upsells, and repetitive support rather than separate tools or additional support headcount.",
+    "For larger merchants, emphasize custom brand-voice training, white-label branding, custom integrations/APIs, dedicated account management, and SLA-backed support.",
+    "Use customer stories as reported outcomes, not guarantees, and tailor the metric to the merchant\u2019s main bottleneck: conversion, attachment rate, support deflection, or returns."
+  ],
+  "open_questions": [
+    "The pages reviewed do not identify the specific 500+ brands beyond the named customer stories.",
+    "The site does not publish product-level implementation timelines, onboarding requirements, or technical integration details beyond Shopify installation.",
+    "The reviewed pages do not explain the exact data architecture, AI model providers, or how competitor comparison research is controlled.",
+    "The site does not publish independent validation of its claimed performance metrics.",
+    "The contact page and detailed individual customer-story pages were not reviewed in this quick pass."
+  ],
+  "sources": []
+}

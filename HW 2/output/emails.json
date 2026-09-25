@@ -1,0 +1,96 @@
+{
+  "run_id": "20260917T162256",
+  "generated_at": "2026-09-17T17:04:46",
+  "status": "drafts_only_nothing_sent",
+  "seller": {
+    "name": "BuyScout.ai (operated by NetPrism Inc.)",
+    "website": "https://buyscout.ai"
+  },
+  "emails": [
+    {
+      "run_id": "20260917T162256",
+      "generated_at": "2026-09-17T17:04:46",
+      "status": "draft_not_sent",
+      "company_name": "OSEA Malibu",
+      "website": "https://oseamalibu.com",
+      "to": "skincarestudio@oseamalibu.com",
+      "subject": "Helping shoppers build an OSEA routine",
+      "body": "Hi OSEA team,\n\nYour site guides shoppers across face, body, concern-based, pregnancy and postpartum, fragrance-free, and travel categories, alongside a skin quiz and subscription options. That breadth can make it difficult for a shopper to know which products belong in a routine\u2014or which sets and add-ons fit their needs.\n\nBuyScout.ai adds a Shopify Store Agent that can answer product questions, recommend routines, compare options, and suggest relevant cross-sells in the storefront. Beauty is one of our strongest use cases, with customer stories reporting higher multi-product baskets.\n\nWould a 15-minute conversation about OSEA\u2019s product-discovery experience be useful?\n\nBuyScout.ai team",
+      "personalization_notes": [
+        "OSEA organizes products by skincare category and concern.",
+        "The site promotes a 'Build Your OSEA Malibu Routine' skin quiz.",
+        "The site offers sets and subscriptions, creating recommendation and cross-sell opportunities.",
+        "Beauty is a BuyScout.ai proof category; customer-story metrics are reported outcomes, not guarantees."
+      ],
+      "contacts": [
+        {
+          "name": null,
+          "role": "Customer Care",
+          "email": "support@oseamalibu.com",
+          "source_url": "https://oseamalibu.com/pages/contact-osea"
+        },
+        {
+          "name": null,
+          "role": "Skincare Studio",
+          "email": "skincarestudio@oseamalibu.com",
+          "source_url": "https://oseamalibu.com/pages/contact-osea"
+        }
+      ]
+    },
+    {
+      "run_id": "20260917T162256",
+      "generated_at": "2026-09-17T17:04:46",
+      "status": "draft_not_sent",
+      "company_name": "Pela",
+      "website": "https://pelacase.com",
+      "to": "hello@pelacase.com",
+      "subject": "Reducing phone-model choice friction",
+      "body": "Hi Pela team,\n\nPela\u2019s storefront covers a wide range of iPhone, Google Pixel, and Samsung Galaxy models, then extends into AirPod cases, straps, grips, wallets, cables, and MagSafe accessories. That gives shoppers plenty of choice, but also creates compatibility questions and opportunities to miss a useful add-on.\n\nBuyScout.ai adds a Shopify Store Agent that can help shoppers identify the right model, compare case options, and recommend compatible accessories during the buying journey. Electronics and accessories are a core BuyScout.ai use case, including reported gains from product attachment in a customer story.\n\nWould you be open to a 15-minute discussion?\n\nBuyScout.ai team",
+      "personalization_notes": [
+        "Pela lists extensive Apple, Google, and Samsung model coverage.",
+        "The site sells several accessory categories beyond phone cases.",
+        "The homepage promotes a buy-one-get-one case offer and a free mini wallet at a purchase threshold.",
+        "Electronics/accessories is a BuyScout.ai proof category; reported outcomes are not guarantees."
+      ],
+      "contacts": [
+        {
+          "name": null,
+          "role": "General contact",
+          "email": "hello@pelacase.com",
+          "source_url": "https://pelacase.com/pages/contact"
+        }
+      ]
+    },
+    {
+      "run_id": "20260917T162256",
+      "generated_at": "2026-09-17T17:04:46",
+      "status": "draft_not_sent",
+      "company_name": "COCOLAB / Cocofloss",
+      "website": "https://cocofloss.com",
+      "to": "partnerships@cocolab.com",
+      "subject": "Making oral-care product choice easier",
+      "body": "Hi COCOLAB team,\n\nYour storefront spans Cocofloss, Cocoshine, Cocobrush, refills, kids products, gifts, flavor variants, and subscription options\u2014and it also invites shoppers to take a smile-care quiz. That breadth can leave shoppers wondering where to start, which format they need, or what to add to a routine.\n\nBuyScout.ai gives Shopify stores a conversational Store Agent that can answer product questions, recommend routines, compare options, and surface relevant bundles or refills. Beauty and wellness are strong BuyScout.ai use cases, with customer stories reporting improved multi-product baskets.\n\nWould a short 15-minute call be worthwhile?\n\nBuyScout.ai team",
+      "personalization_notes": [
+        "COCOLAB offers a 'Your smile care starts here' product quiz.",
+        "The catalog spans floss, brushes, toothpaste, refills, kids products, gifts, and bundles.",
+        "The site distinguishes spool-and-dispenser and refill variants.",
+        "The site publishes a partnerships@cocolab.com address suitable for exploratory outreach.",
+        "Beauty/wellness proof points are reported customer-story outcomes, not promises."
+      ],
+      "contacts": [
+        {
+          "name": null,
+          "role": "Partnerships & Collabs",
+          "email": "partnerships@cocolab.com",
+          "source_url": "https://cocofloss.com/pages/contact"
+        },
+        {
+          "name": null,
+          "role": "Customer Care",
+          "email": "help@cocolab.com",
+          "source_url": "https://cocofloss.com/pages/contact"
+        }
+      ]
+    }
+  ]
+}

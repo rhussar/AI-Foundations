@@ -1,0 +1,105 @@
+[
+  {
+    "ID": "R1",
+    "sources": [
+      "receipt_home_depot.pdf",
+      "credit_card_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ],
+    "amounts_seen": [
+      67.12,
+      67.12
+    ],
+    "included_income_statement": "yes",
+    "amounts_used_income_statement": 67.12,
+    "resolution": "The receipt and card charge are the same Home Depot transaction. The owner confirmed the bins and cleaning supplies were for the shop, so the expense is included once."
+  },
+  {
+    "ID": "R2",
+    "sources": [
+      "bank_statement_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ],
+    "amounts_seen": [
+      560.0,
+      95.0
+    ],
+    "included_income_statement": "yes",
+    "amounts_used_income_statement": 465.0,
+    "resolution": "The $560 Square deposit includes a $95 personal walk-in tune-up. Only the business revenue portion of $465 is included."
+  },
+  {
+    "ID": "R3",
+    "sources": [
+      "receipt_park_tool.pdf",
+      "credit_card_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ],
+    "amounts_seen": [
+      88.7,
+      127.4
+    ],
+    "included_income_statement": "yes",
+    "amounts_used_income_statement": 127.4,
+    "resolution": "The $88.70 receipt represents only part of the $127.40 Park Tool card charge; the remaining item shipped later. Include the full card charge once."
+  },
+  {
+    "ID": "R4",
+    "sources": [
+      "bank_statement_jan2026.pdf",
+      "credit_card_jan2026.pdf",
+      "receipt_nhbp_parts.pdf",
+      "email_owner_voice_memo.txt"
+    ],
+    "amounts_seen": [
+      742.18,
+      218.4
+    ],
+    "included_income_statement": "yes",
+    "amounts_used_income_statement": 960.58,
+    "resolution": "The $742.18 check and $218.40 card charge are separate New Haven Bike Parts purchases, not one duplicated expense. Both are included separately."
+  },
+  {
+    "ID": "R5",
+    "sources": [
+      "receipt_courier.pdf",
+      "credit_card_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ],
+    "amounts_seen": [
+      28.0,
+      28.0
+    ],
+    "included_income_statement": "yes",
+    "amounts_used_income_statement": 28.0,
+    "resolution": "The receipt and card charge refer to the same emergency tube delivery. Count the courier expense once."
+  },
+  {
+    "ID": "R6",
+    "sources": [
+      "receipt_amazon_headphones.pdf",
+      "credit_card_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ],
+    "amounts_seen": [
+      89.99,
+      89.99
+    ],
+    "included_income_statement": "no",
+    "amounts_used_income_statement": 0,
+    "resolution": "The receipt matches the Amazon card charge, but the owner confirmed the headphones were for personal commuting and not business use."
+  },
+  {
+    "ID": "R7",
+    "sources": [
+      "credit_card_jan2026.pdf",
+      "email_owner_voice_memo.txt"
+    ],
+    "amounts_seen": [
+      156.0
+    ],
+    "included_income_statement": "yes",
+    "amounts_used_income_statement": 156.0,
+    "resolution": "Although initially classified as personal, the owner confirmed the REI high-vis jacket was required for on-site business fleet work. Include it as a business expense."
+  }
+]

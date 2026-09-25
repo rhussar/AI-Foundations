@@ -1,0 +1,57 @@
+{
+  "revenue_USD": 465.0,
+  "expense_lines": [
+    {
+      "label": "R1",
+      "amount_USD": 67.12,
+      "category": "reconciled expense",
+      "sources": [
+        "receipt_home_depot.pdf",
+        "credit_card_jan2026.pdf",
+        "email_owner_voice_memo.txt"
+      ]
+    },
+    {
+      "label": "R3",
+      "amount_USD": 127.4,
+      "category": "reconciled expense",
+      "sources": [
+        "receipt_park_tool.pdf",
+        "credit_card_jan2026.pdf",
+        "email_owner_voice_memo.txt"
+      ]
+    },
+    {
+      "label": "R4",
+      "amount_USD": 960.58,
+      "category": "reconciled expense",
+      "sources": [
+        "bank_statement_jan2026.pdf",
+        "credit_card_jan2026.pdf",
+        "receipt_nhbp_parts.pdf",
+        "email_owner_voice_memo.txt"
+      ]
+    },
+    {
+      "label": "R5",
+      "amount_USD": 28.0,
+      "category": "reconciled expense",
+      "sources": [
+        "receipt_courier.pdf",
+        "credit_card_jan2026.pdf",
+        "email_owner_voice_memo.txt"
+      ]
+    },
+    {
+      "label": "R7",
+      "amount_USD": 156.0,
+      "category": "reconciled expense",
+      "sources": [
+        "credit_card_jan2026.pdf",
+        "email_owner_voice_memo.txt"
+      ]
+    }
+  ],
+  "Total_expenses_USD": 1339.1,
+  "net_income_USD": -874.1
+}
