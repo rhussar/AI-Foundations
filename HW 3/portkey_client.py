@@ -20,7 +20,9 @@ OUTPUT_DIR = ROOT / "output"
 PROMPTS_DIR = ROOT / "prompts"
 
 PORTKEY_BASE_URL = "https://api.portkey.ai/v1"
-MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6")
+# Allowed for HW 3. The course budget assumes luna; use a smarter one only for hard vision/agent steps.
+ALLOWED_MODELS = ("gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol", "gpt-6-astra")
+MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6-luna")
 
 
 def load_environment():

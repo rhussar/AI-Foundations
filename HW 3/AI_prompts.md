@@ -1,19 +1,17 @@
 # AI Prompts Log — Homework 3
 
-This file tracks the prompts used with Claude for each problem in Homework 3.
+This file tracks the prompts used with Claude for each problem in Homework 3. There is one section per problem, each with the problem number and title, at least one prompt I typed, and a follow-up prompt if one was needed (with one sentence on what was lacking after the first).
 
 ---
 
-## Session Startup Prompts
+## Problem 1: Vibe Coder Prompts
 
-- Date: 2026-09-25
-- Prompts:
-  > Okay, we're going to be working on hw 3 in the cloud. Or yourself, find the port key in the .env and get ready for this homework.
+**Prompt 1:**
+> Problem 1: Vibe coder prompts.
 
-  > Add the repo, and I added a Portkey.
+**Follow-up prompt (if needed):**
+>
 
-- Date: 2026-09-26
-- Prompt:
-  > Okay, I don't know what the issue is, but I want to start doing homework 3.
+**What was lacking after the first prompt:**
 
 ---

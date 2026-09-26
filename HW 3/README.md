@@ -1,5 +1,11 @@
 # Homework 3 Workspace
 
+Campus Customs sells Yale merch. HW 3 builds an agent that answers two growth questions:
+1. Is someone in a photo wearing a Campus Customs product (so they might be worth outreach)?
+2. Would a Campus Customs ad video land with a given customer profile, such as a Yale student or a parent?
+
+All model calls go through Portkey with `PORTKEY_API_KEY`, using one of `gpt-5.6-luna` (the default, and what the course budget assumes), `gpt-5.6-terra`, `gpt-5.6-sol` or `gpt-6-astra`. The work is submitted as `hw3.zip`; the last problem lists which files to include.
+
 This folder contains:
 - `AI_prompts.md` for recording prompts used during Homework 3
 - `portkey_client.py`, the shared Portkey/OpenAI client every HW 3 script imports
