@@ -181,7 +181,7 @@ The agent calls `judge_ad_effectiveness(video_path, profile_path)`. Inside `tool
 | `load_profile` | Reads the profile JSON and checks it against `CustomerProfile` in `models.py`, so a broken profile fails clearly instead of confusing the judge | No |
 | `extract_frames` | Takes about one frame per second (the middle of each second, which skips fades), drops frames that barely differ from the last one kept, and stops at 10. The 9-second ad gives 9 frames at 768 px. Its camera never stops moving, so no frame was dropped as a near-duplicate; on a static video that check saves images | No |
 | `watch_video` | One vision call sees the frames in order, each labelled with its time. It describes the scenes, the people, the setting, each distinct garment design (read like a product photo), on-screen text, Campus Customs branding, the call to action, the tone and the apparent message. It describes but doesn't judge | Yes, 1 call with 9 images |
-| `extract_audio` + `listen_to_audio` | The soundtrack is pulled out with ffmpeg (16 kHz mono WAV). The Responses API the agent uses can't take audio, so this call goes through the Chat Completions API. If the model accepts audio, it describes the lyrics or speech, the music and the mood. If it doesn't, the analysis says so and why, and the judge is told not to guess what the soundtrack says | Yes, 1 call (may be refused) |
+| `extract_audio` + `listen_to_audio` | The soundtrack is pulled out with ffmpeg (16 kHz mono WAV). The Responses API the agent uses can't take audio, so this call goes through the Chat Completions API. If the model accepts audio, it describes the lyrics or speech, the music and the mood. If it doesn't, the analysis says so and why, and the judge is told not to guess what the soundtrack says. **In the real runs the provider behind Portkey refused audio** ("content blocks are expected to be either text or image_url type"), so every verdict so far is based on the visuals alone, and says so | Yes, 1 call (refused here) |
 | `match_featured_products` | Matches each Yale garment seen in the ad to its closest catalog product, using the same text scorer as Problem 3's shortlist, and only when the match is strong. The judge then knows who those products are made for (for example "students, alumni, fans") | No |
 | `analyze_video` | Runs the four steps above once per video and caches the result: shared in memory when several profiles are judged at once, and saved to `output/cache/` for later runs. The cache key includes the video's fingerprint, the model and the watch/listen instructions, so changing any of them triggers a fresh analysis. `--no-cache` forces one | No |
 | `judge_for_customer` | One **text-only** call gets the profile, the video analysis and the featured products' audiences, and returns the judgement. No images are re-sent: the video is judged from the analysis | Yes, 1 call, no images |
@@ -193,7 +193,8 @@ The agent calls `judge_ad_effectiveness(video_path, profile_path)`. Inside `tool
 ### Guardrails
 
 - **Score and response must agree.** 7–10 means "likely to shop", 4–6 "might shop", 1–3 "unlikely to shop". A judgement that contradicts itself (for example 8/10 but "might shop") is sent back to be fixed. The judge step is text only, so a retry costs no images.
-- **No invented soundtrack.** If the audio wasn't analysed, the judge is told plainly and asked not to guess, and `audio_analyzed: false` with `audio_note` records why.
+- **No invented soundtrack.** If the audio wasn't analysed, the judge is told plainly and asked not to guess, and `audio_analyzed: false` with `audio_note` records why. Confidence is also capped at `medium` in code. The first real run came back "high" without the audio, and a parody of a rap song can't be judged with high confidence from its visuals alone.
+- **The format is measured, not guessed.** The video's resolution and orientation are read from the file and given to the judge. The first real run called this landscape 1920×1080 ad "vertical".
 - **Real problems count.** The judging instructions make no Campus Customs branding and no call to action count as weaknesses even when the ad looks great, because a customer who can't tell who's selling can't buy.
 - **Paths are checked before any model call.** A typo in `--video` or `--profile` stops the run with a clear message and costs nothing. Inside the agent, a wrong path makes the agent retry with the exact path.
 - **The right ability for the job.** The run checks that the agent answered with an `AdEffectiveness` for a video request, and a `ProductIdentification` for a photo request.
@@ -215,12 +216,54 @@ The tool returns an `AdEffectiveness`:
 | `summary` | two or three sentences | The short version for someone skimming |
 | `video_analysis` | frames, scenes, garments, branding, call to action, audio, featured products | What the agent actually saw and heard. Anyone can check whether a bad verdict came from misreading the video or from judging it badly, and whether the soundtrack was part of the judgement |
 
-`CustomerProfile` (in `models.py` too) sets out what a profile file contains:
-- who the customer is and their relationship to Yale
-- interests, values and style
-- budget and price sensitivity
-- shopping and media habits
-- what they already own
-- what makes them buy, and their likely objections
+`CustomerProfile` (in `models.py` too) sets out what a profile file contains; see Problem 6.
 
-These are the facts that decide whether an ad persuades someone. Extra fields are allowed and passed through to the judge.
+---
+
+## Problem 6: Student and parent profiles
+
+### Why these two profiles
+
+Campus Customs' two biggest groups of buyers are the people *at* Yale and the people who love someone at Yale. The catalog says so: its `target_audience` values are dominated by students and alumni on one side and parents and family members on the other, with a whole family line ("Yale Dad", "Yale Mom", "Yale Grandpa" and so on). So one profile from each group tests whether an ad reaches the shop's real customers.
+
+They were also written as **deliberate opposites**, to test whether the agent judges from the profile or just rates the ad in general:
+
+| | Student: Maya Chen, 19, Yale sophomore | Parent: Tom Brennan, 53, father of a Yale sophomore |
+| --- | --- | --- |
+| Relationship to Yale | Lives it daily, in Pierson College | Proud from 8 hours away; first in the family at Yale is his daughter |
+| Style | Oversized streetwear, muted colors, hates touristy logos | Classic quarter-zips and crewnecks; no streetwear |
+| Money | Campus-job budget, **high** price sensitivity | Pays for quality, **low** price sensitivity |
+| Where ads reach them | TikTok and Instagram, sound on, skips anything corporate in 2 s | Facebook with the sound off, the Yale parents group, email |
+| Buys for | Herself and matching gear with friends | Himself, as gifts for family, and care packages for his daughter |
+| When | The Game, college spirit days | Family Weekend, holidays, move-in, Commencement |
+| Objections | Already owns a Yale sweatshirt; doesn't know Campus Customs | "Aimed at students, not me"; wants to see product, price and where to buy; doesn't get the music references |
+
+The ad is a music-video-style clip of young people in Yale hoodies under a highway bridge, with no shop name and no call to action. A good judge should score it clearly higher for Maya than for Tom, for reasons it can name from each profile.
+
+**A typical student and parent rather than myself.** A realistic, specific persona gives the judge concrete things to test the ad against: a budget, a platform, an objection. Either profile could be swapped for a real person by filling in the same fields.
+
+### The profile model (`CustomerProfile` in `models.py`)
+
+`make_profiles.py` builds both profiles as `CustomerProfile` instances and writes them to `profiles/profile_student.json` and `profiles/profile_parent.json`, so the files always match the model.
+
+| Field | Why it matters for whether an ad resonates |
+| --- | --- |
+| `profile_id`, `name`, `description` | Who this is, in a sentence the judge can picture |
+| `age_range`, `relationship_to_yale` | The first filter: does the ad's cast and world look like theirs? |
+| `interests`, `values` | What the ad must connect with, or at least not offend: belonging, authenticity, tradition, not embarrassing your kid |
+| `style` | Whether the clothes in the ad are clothes they'd wear |
+| `budget`, `price_sensitivity` | Whether a missing price or discount is a dealbreaker (student) or barely matters (parent) |
+| `shopping_habits` | Whether they could act on the ad the way they actually buy (phone, campus, trusted site) |
+| `media_habits` | Where they'd see it and how. A soundtrack-driven ad is weaker for someone who watches with the sound off |
+| `already_owns` | Whether the ad gives a reason to buy *another* Yale item |
+| `buys_for`, `purchase_occasions` | Added in this problem. Parents buy for others and around campus events, so an ad can win them with a gift or an occasion, and miss them without one |
+| `buying_triggers` | What actually pushes them to buy |
+| `likely_objections` | What the ad has to overcome. The judge scores each one it leaves unanswered |
+
+Every field is required, and unknown fields are rejected (`extra="forbid"`). A half-filled profile or a misspelt field name would otherwise quietly weaken the judgement. `agent.py` now validates `--profile` files before spending any model calls.
+
+### Running both profiles
+
+Each profile runs as its own command, as the problem specifies. Each run **merges** its result into `output/ad_effectiveness.json` instead of overwriting it: a result replaces the earlier one for the same video and profile, and keeps the rest. So after the student run and then the parent run, the file holds both. The same merging applies to `output/identify_product.json`, keyed by photo.
+
+The second run costs one text call: the video analysis from the first run is cached, so the parent run doesn't look at a single frame again.

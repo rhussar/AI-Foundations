@@ -11,7 +11,10 @@ Ability 1 (Problems 3-4): is a Campus Customs product in this photo, and which o
 Ability 2 (Problem 5): how well would this ad video get this customer to shop at Campus Customs?
     python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_student.json"
     (give several --profile files to judge the same video for each customer)
-    -> output/ad_effectiveness.json, a list with one AdEffectiveness per profile
+    -> output/ad_effectiveness.json, a list with one AdEffectiveness per video and profile
+
+Results are merged into those files: a new result replaces the old one for the same photo (or the same
+video and profile) and keeps the rest, so separate runs for the student and the parent end up side by side.
 """
 
 import argparse
@@ -83,11 +86,40 @@ def build_agent(model_name: str = MODEL):
 # --- Running requests ----------------------------------------------------------------------------
 
 
-def save_results(results: list, out_path: Path):
-    """Save one structured result per photo or profile, as a JSON list."""
+def result_key(row: dict):
+    """What a result is about: one photo, or one video judged for one profile."""
+    if "image_path" in row:
+        return (row["image_path"],)
+    return (row["video_path"], row["profile_path"])
+
+
+def save_results(results: list, out_path: Path, result_type: type):
+    """Merge the results into the JSON list at out_path and return how many entries it now holds.
+
+    A result replaces an earlier one about the same photo (or the same video and profile) and leaves
+    the others alone, so running the student and then the parent profile keeps both.
+    """
+    existing = []
+    if out_path.exists():
+        try:
+            rows = json.loads(out_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            rows = []
+        for row in rows if isinstance(rows, list) else []:
+            try:
+                existing.append(result_type.model_validate(row).model_dump())
+            except ValueError:
+                print(f"Dropping an old entry in {out_path.name} that no longer matches {result_type.__name__}.")
+
+    merged = {result_key(row): row for row in existing}
+    for result in results:
+        row = result.model_dump()
+        merged[result_key(row)] = row
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    rows = [result.model_dump() for result in results]
+    rows = [merged[key] for key in sorted(merged)]
     out_path.write_text(json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return len(rows)
 
 
 def describe_identification(identification: ProductIdentification):
@@ -134,8 +166,9 @@ async def run_request(agent: Agent, request: str, label: str, expected_type: typ
     return label, result.output, None
 
 
-def missing_files(args):
-    """Paths from the command line that don't exist, found before any model call is spent on them."""
+def check_inputs(args):
+    """Problems with the command-line files, found before any model call is spent on them:
+    paths that don't exist, and profiles that don't match CustomerProfile."""
     checks = [(image, tools.IMAGE_SUFFIXES, "image") for image in args.image or []]
     if args.video:
         checks.append((args.video, tools.VIDEO_SUFFIXES, "video"))
@@ -143,14 +176,16 @@ def missing_files(args):
     problems = []
     for path_text, suffixes, kind in checks:
         try:
-            tools.resolve_path(path_text, suffixes, kind)
-        except FileNotFoundError as error:
+            path = tools.resolve_path(path_text, suffixes, kind)
+            if suffixes == {".json"}:
+                tools.load_profile(path)
+        except (FileNotFoundError, ValueError) as error:
             problems.append(str(error))
     return problems
 
 
 async def run(args):
-    if problems := missing_files(args):
+    if problems := check_inputs(args):
         print("\n".join(problems))
         return 2
     catalog = tools.load_catalog()
@@ -165,7 +200,7 @@ async def run(args):
         )
 
     if args.image:
-        out_path = args.out or IDENTIFY_OUT_PATH
+        out_path, result_type = args.out or IDENTIFY_OUT_PATH, ProductIdentification
         jobs = [
             run_request(
                 agent,
@@ -178,7 +213,7 @@ async def run(args):
             for image in args.image
         ]
     else:
-        out_path = args.out or AD_OUT_PATH
+        out_path, result_type = args.out or AD_OUT_PATH, AdEffectiveness
         jobs = [
             run_request(
                 agent,
@@ -199,8 +234,8 @@ async def run(args):
     results = [result for _, result, _ in outcomes if result]
     failures = [(label, error) for label, _, error in outcomes if error]
     if results:
-        save_results(results, out_path)
-        print(f"\nSaved {len(results)} result(s) to {out_path}")
+        total = save_results(results, out_path, result_type)
+        print(f"\nSaved {len(results)} result(s) to {out_path} ({total} in the file)")
     for label, error in failures:
         print(f"FAILED {label}: {error}")
     return 1 if failures else 0

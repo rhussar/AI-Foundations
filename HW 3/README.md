@@ -12,7 +12,7 @@ This folder contains:
 - `models.py`, the Pydantic models shared by the scripts (`CatalogEntry`, `ProductIdentification`, `CustomerProfile`, `AdEffectiveness`)
 - `build_catalog.py` (Problem 2), which turns the product photos into `output/catalog.json`
 - `agent.py` (Problems 3-5), the Campus Customs Pydantic AI agent; its tool logic is in `tools.py`, and all of its instructions are in `prompts/prompts.md`
-- `profiles/` for customer profile JSON files (`profile_student.json`)
+- `profiles/` for customer profile JSON files (`profile_student.json`, `profile_parent.json`), built by `make_profiles.py` (Problem 6)
 - `prompts/` for prompt files
 - `output/` for generated outputs, plus `output/harness.md` describing how the agent is kept fast and under control
 - `data.zip`, the provided data (unzip it here to get `data/`)
@@ -57,6 +57,11 @@ Results are saved to `output/identify_product.json` as a list with one `ProductI
 python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_student.json"
 ```
 
-Results are saved to `output/ad_effectiveness.json` as a list with one `AdEffectiveness` per profile. Give several `--profile` files to judge the same video for each; the video is analysed once and cached in `output/cache/`.
+```bash
+python make_profiles.py   # (re)writes profiles/profile_student.json and profile_parent.json from models.py
+python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_parent.json"
+```
+
+Results are merged into `output/ad_effectiveness.json`, one `AdEffectiveness` per video and profile, so separate runs for each profile end up side by side. Give several `--profile` files to judge the same video for each; the video is analysed once and cached in `output/cache/`.
 
 The scripts read `PORTKEY_API_KEY` from `HW 3/.env` or the workspace `.env`, or from the environment.

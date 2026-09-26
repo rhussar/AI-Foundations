@@ -96,3 +96,26 @@ The first prompt only named the problem, so it didn't say how the prompt log sho
 **What was lacking after the first prompt:**
 
 ---
+
+## Problem 6: Student and Parent Profiles
+
+**Prompt 1:**
+> Problem 6: Student and parent profiles.
+>
+> Create profiles/profile_student.json and profiles/profile_parent.json. These describe a typical Yale student and parent of a Yale student, or any student or parent you like, including yourself. Include useful fields that would matter for whether an ad resonates. Define the profile shape in models.py as a Pydantic model, then save the filled-in student and parent instance as those JSON files.
+>
+> In output harness.md, explain why you chose those two profiles.
+> Run the agent on the Campus Customs ad video for both profiles:
+> python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_student.json"
+> python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_parent.json"
+>
+> Save the structural result for both runs to output/add effectiveness.json.
+>
+> Write what you think in output/agent_valuation.md. Add a new section for ad runs. The output appears to be good.
+
+**Follow-up prompt (if needed):**
+>
+
+**What was lacking after the first prompt:**
+
+---

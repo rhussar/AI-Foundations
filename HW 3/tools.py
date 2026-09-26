@@ -393,7 +393,7 @@ async def identify_product(photo: Path, deps: AgentDeps):
 def extract_frames(video: Path, max_frames: int = MAX_VIDEO_FRAMES):
     """Take about one frame per second (at most max_frames), dropping frames that barely differ.
 
-    Returns the video's duration and a list of (time in seconds, JPEG bytes).
+    Returns the video's duration, its (width, height), and a list of (time in seconds, JPEG bytes).
     """
     capture = cv2.VideoCapture(str(video))
     try:
@@ -402,6 +402,7 @@ def extract_frames(video: Path, max_frames: int = MAX_VIDEO_FRAMES):
         if frame_count <= 0:
             raise ValueError(f"Could not read any frames from {display_path(video)}.")
         duration = frame_count / fps
+        size = (int(capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT)))
         count = min(max_frames, max(1, round(duration)))
         # The middle of each equal slice, so the very first and last frames (often fades) are skipped.
         indexes = [min(frame_count - 1, round((k + 0.5) * frame_count / count)) for k in range(count)]
@@ -428,7 +429,7 @@ def extract_frames(video: Path, max_frames: int = MAX_VIDEO_FRAMES):
             frames.append((round(index / fps, 1), buffer.getvalue()))
     finally:
         capture.release()
-    return duration, frames
+    return duration, size, frames
 
 
 def extract_audio(video: Path):
@@ -488,11 +489,13 @@ def _video_cache_key(video: Path, deps: AgentDeps):
 
 
 async def _analyze_video_uncached(video: Path, deps: AgentDeps):
-    duration, frames = await asyncio.to_thread(extract_frames, video)
+    duration, (width, height), frames = await asyncio.to_thread(extract_frames, video)
     (observation, (audio, audio_note)) = await asyncio.gather(watch_video(frames, deps), listen_to_audio(video, deps))
     return VideoAnalysis(
         video_path=display_path(video),
         duration_seconds=round(duration, 2),
+        resolution=f"{width}x{height}",
+        orientation="landscape" if width > height else "portrait" if height > width else "square",
         frame_times_seconds=[seconds for seconds, _ in frames],
         observation=observation,
         audio_analyzed=audio is not None,
@@ -575,7 +578,8 @@ async def judge_for_customer(analysis: VideoAnalysis, profile: CustomerProfile, 
     request = "\n\n".join(
         [
             f"Customer profile:\n{profile.model_dump_json(indent=2)}",
-            f"What the ad shows ({analysis.duration_seconds}s long):\n{analysis.observation.model_dump_json(indent=2)}",
+            f"What the ad shows ({analysis.duration_seconds}s long, {analysis.orientation} {analysis.resolution} video):\n"
+            f"{analysis.observation.model_dump_json(indent=2)}",
             f"What the ad sounds like:\n{audio_part}",
             "Campus Customs catalog products the ad appears to feature:\n" + "\n".join(featured),
         ]
@@ -591,6 +595,9 @@ async def judge_ad(video: Path, profile_path: Path, deps: AgentDeps):
     profile = await asyncio.to_thread(load_profile, profile_path)
     analysis = await analyze_video(video, deps)
     judgement = await judge_for_customer(analysis, profile, deps)
+    if not analysis.audio_analyzed and judgement.confidence == "high":
+        # Without the soundtrack the judgement covers only part of the ad, so it can't be highly confident.
+        judgement = judgement.model_copy(update={"confidence": "medium"})
     return AdEffectiveness(
         video_path=display_path(video),
         profile_path=display_path(profile_path),

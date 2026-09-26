@@ -8,7 +8,8 @@ ProductIdentification is the agent's answer to "is a Campus Customs product in t
 one?". PhotoObservation and MatchVerdict are what the two vision steps inside that tool return.
 
 AdEffectiveness is the agent's answer to "how well would this ad video work on this customer?".
-CustomerProfile is the profile JSON it reads; VideoAnalysis is what it saw and heard in the video.
+CustomerProfile is the customer profile it reads (profiles/*.json, built by make_profiles.py);
+VideoAnalysis is what it saw and heard in the video.
 """
 
 from typing import Literal
@@ -153,25 +154,33 @@ class ProductIdentification(BaseModel):
 
 
 class CustomerProfile(BaseModel):
-    """A customer profile file, e.g. profiles/profile_student.json. Extra fields are kept and passed on."""
+    """A customer the agent judges ads for, e.g. profiles/profile_student.json.
 
-    model_config = ConfigDict(extra="allow")
+    The fields are the facts that decide whether an ad lands with someone: who they are and how they
+    relate to Yale, what they care about and how they dress, what they can spend, where they see ads
+    and how they shop, what they already own, what makes them buy (and when, and for whom), and what
+    would stop them. make_profiles.py builds the profile files from this model.
+    """
+
+    model_config = ConfigDict(extra="forbid")  # a misspelt field name is an error, not silently ignored
 
     profile_id: str = Field(description="Short key, e.g. 'student'.")
-    name: str = Field(description="Who this customer is, e.g. 'Maya, Yale sophomore'.")
+    name: str = Field(description="Who this customer is, e.g. 'Maya Chen, Yale sophomore'.")
     description: str = Field(description="A few sentences about the customer.")
-    age_range: str | None = None
-    relationship_to_yale: str | None = None
-    interests: list[str] = []
-    values: list[str] = []
-    style: str | None = None
-    budget: str | None = None
-    price_sensitivity: Literal["low", "medium", "high"] | None = None
-    shopping_habits: list[str] = []
-    media_habits: list[str] = []
-    already_owns: list[str] = []
-    buying_triggers: list[str] = []
-    likely_objections: list[str] = []
+    age_range: str = Field(description="Rough age, e.g. '18-22'.")
+    relationship_to_yale: str = Field(description="How they're connected to Yale, e.g. 'current undergraduate'.")
+    interests: list[str] = Field(description="What they spend their time on.")
+    values: list[str] = Field(description="What matters to them; what an ad has to respect to win them over.")
+    style: str = Field(description="How they dress and what they avoid.")
+    budget: str = Field(description="What they spend on clothes or gifts.")
+    price_sensitivity: Literal["low", "medium", "high"] = Field(description="How much price decides a purchase.")
+    shopping_habits: list[str] = Field(description="How and where they buy.")
+    media_habits: list[str] = Field(description="Where they would see an ad, and how they react to ads there.")
+    already_owns: list[str] = Field(description="Yale gear they already have.")
+    buys_for: list[str] = Field(description="Who they buy Yale gear for, e.g. 'themselves', 'their child'.")
+    purchase_occasions: list[str] = Field(description="When they buy, e.g. 'Family Weekend', 'The Game'.")
+    buying_triggers: list[str] = Field(description="What pushes them to buy.")
+    likely_objections: list[str] = Field(description="What would stop them buying.")
 
 
 class VideoObservation(BaseModel):
@@ -203,6 +212,8 @@ class VideoAnalysis(BaseModel):
 
     video_path: str = Field(description="The video that was analysed.")
     duration_seconds: float = Field(description="Length of the video.")
+    resolution: str = Field(description="Width x height in pixels, measured from the file, e.g. '1920x1080'.")
+    orientation: Literal["landscape", "portrait", "square"] = Field(description="Frame shape, measured from the file.")
     frame_times_seconds: list[float] = Field(description="When each frame shown to the model was taken.")
     observation: VideoObservation = Field(description="What the frames show.")
     audio_analyzed: bool = Field(description="Whether the soundtrack was heard by the model.")
