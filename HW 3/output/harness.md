@@ -81,7 +81,7 @@ Fields that can't be seen in a photo, such as price, sizes and fabric, are left 
 python agent.py --image "data/test_images/image_01_true.jpeg"
 ```
 
-The structured answer is saved to `output/identify_product.json`.
+The structured answer is saved to `output/identify_product.json`, as a list with one entry per photo. Several `--image` paths can be given, and they are checked at the same time.
 
 ### How the agent identifies a product
 
@@ -120,7 +120,7 @@ Run for real through Portkey with `gpt-5.6-luna`:
 | `image_03_true.jpeg` (man in navy "YALE BULLDOGS" long-sleeve, arm raised) | product | ✅ `dry-zone-long-sleeve` | high | 7 |
 | `image_04_false.jpeg` (navy Balenciaga tee in front of a Yale gate) | no product | ✅ none; stopped after step 1 | high | 1 |
 
-**4 of 4 correct**, with at most 7 images per photo, and just 1 for the two photos with no Yale branding. Photo 3 is the hard one: the shortlist held two navy "YALE BULLDOGS" long-sleeves, and the side-by-side step picked the right one. `output/identify_product.json` holds the full answer for `image_01_true.jpeg`.
+**4 of 4 correct**, with at most 7 images per photo, and just 1 for the two photos with no Yale branding. Photo 3 is the hard one: the shortlist held two navy "YALE BULLDOGS" long-sleeves, and the side-by-side step picked the right one. `output/identify_product.json` holds all four answers (Problem 4), and `output/agent_evaluation.md` evaluates them.
 
 One thing to watch: for photo 1 the model read the design as "center chest", while the catalog calls it "full front". The right product still came first in the shortlist, but the Dad crewneck and hoodie look-alikes dropped out of the top 5. Placement is a small part of the score for this reason, and the printed words carry most of it.
 
