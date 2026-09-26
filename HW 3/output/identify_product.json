@@ -1,0 +1,39 @@
+{
+  "image_path": "data/test_images/image_01_true.jpeg",
+  "product_found": true,
+  "product_id": "yale-dad-t-shirt",
+  "product_name": "Yale Dad T-Shirt",
+  "possible_product_ids": [],
+  "confidence": "high",
+  "evidence": [
+    "Heather grey short-sleeve T-shirt matches the candidate garment type and color.",
+    "Front graphic clearly reads large navy “YALE,” small “UNIVERSITY,” and “DAD” beneath it.",
+    "The lettering layout and horizontal bars around the YALE graphic match the catalog photo."
+  ],
+  "summary": "The customer is wearing the Yale Dad T-Shirt. Its grey short-sleeve construction and distinctive YALE UNIVERSITY DAD front design match exactly; the other candidates say YALE BASEBALL, FOOTBALL, SOCCER, or DIVING.",
+  "observed_garments": [
+    {
+      "worn_by": "smiling man in foreground",
+      "garment_type": "t-shirt",
+      "base_color": "heather grey",
+      "visible_text": [
+        "YALE",
+        "UNIVERSITY",
+        "DAD"
+      ],
+      "graphics": [
+        "Yale block lettering"
+      ],
+      "design_placement": "center chest",
+      "has_yale_branding": true
+    }
+  ],
+  "candidates_checked": [
+    "yale-dad-t-shirt",
+    "tri-blend-sports-baseball-t-shirt",
+    "tri-blend-sports-football-t-shirt",
+    "tri-blend-sports-soccer-t-shirt",
+    "yale-diving-t-shirt"
+  ],
+  "images_sent": 7
+}
