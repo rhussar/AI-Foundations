@@ -10,9 +10,10 @@ This file tracks the prompts used with Claude for each problem in Homework 3. Th
 > Problem 1: Vibe coder prompts.
 
 **Follow-up prompt (if needed):**
->
+> Set up like previous homework problems.
 
 **What was lacking after the first prompt:**
+The first prompt only named the problem, so it didn't say how the prompt log should be laid out.
 
 ---
 
