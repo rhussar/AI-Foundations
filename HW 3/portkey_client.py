@@ -11,7 +11,9 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-from openai import APIConnectionError, AuthenticationError, OpenAI
+from openai import APIConnectionError, AsyncOpenAI, AuthenticationError, OpenAI
+from pydantic_ai.models.openai import OpenAIResponsesModel
+from pydantic_ai.providers.openai import OpenAIProvider
 
 
 ROOT = Path(__file__).resolve().parent
@@ -23,6 +25,9 @@ PORTKEY_BASE_URL = "https://api.portkey.ai/v1"
 # Allowed for HW 3. The course budget assumes luna; use a smarter one only for hard vision/agent steps.
 ALLOWED_MODELS = ("gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol", "gpt-6-astra")
 MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6-luna")
+
+# Keep pydantic-ai's first-run banner out of script output.
+os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")
 
 
 def load_environment():
@@ -47,6 +52,25 @@ def build_client():
             "x-portkey-provider": "openai",
         },
     )
+
+
+def build_agent_model(model_name: str = MODEL, max_retries: int = 3):
+    """Pydantic AI model routed through Portkey, for scripts that run an Agent.
+
+    One AsyncOpenAI client is shared by every request, so concurrent calls reuse its connection pool.
+    max_retries lets the client back off and retry on rate limits (429) and server errors.
+    """
+    if model_name not in ALLOWED_MODELS:
+        raise ValueError(f"{model_name} is not allowed for HW 3. Pick one of: {', '.join(ALLOWED_MODELS)}")
+
+    api_key = load_environment()
+    client = AsyncOpenAI(
+        api_key=api_key,
+        base_url=PORTKEY_BASE_URL,
+        default_headers={"x-portkey-api-key": api_key, "x-portkey-provider": "openai"},
+        max_retries=max_retries,
+    )
+    return OpenAIResponsesModel(model_name, provider=OpenAIProvider(openai_client=client))
 
 
 def image_to_data_url(path: Path):
