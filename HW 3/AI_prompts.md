@@ -97,7 +97,7 @@ The first prompt only named the problem, so it didn't say how the prompt log sho
 
 ---
 
-## Problem 6: Student and Parent Profiles
+## Problems 6–7: Student and Parent Profiles, and Running the Ad for Both
 
 **Prompt 1:**
 > Problem 6: Student and parent profiles.
@@ -112,6 +112,59 @@ The first prompt only named the problem, so it didn't say how the prompt log sho
 > Save the structural result for both runs to output/add effectiveness.json.
 >
 > Write what you think in output/agent_valuation.md. Add a new section for ad runs. The output appears to be good.
+
+**Follow-up prompt (if needed):**
+>
+
+**What was lacking after the first prompt:**
+
+---
+
+## Problem 7: Run the Ad for Both Profiles
+
+**Prompt 1:**
+> That last problem was problem 7. Run an ad for both profiles.
+
+**Follow-up prompt (if needed):**
+>
+
+**What was lacking after the first prompt:**
+
+---
+
+## Problem 8: Safety Rules Plus Audit Trail
+
+**Prompt 1:**
+> Problem 8: Safety rules plus auto trail. Now add safety rules for processing images to the same prompts/prompts.md file you have been growing. Add a clear safety section the agent will load as its system prompt. Make the agent append to output/audit_trail.json on every run. For each agent loop iteration, record enough to audit later:
+>
+> * the time
+> * the thoughts
+> * the tool name
+> * the arguments
+> * the short result
+> * the stop reason
+>
+> Append as the agent runs. Put an audit entry type in models.py as a Pydantic model so each append record is structured the same way. In output/harness.md, briefly say which audit fields you include and why. Run it at least once to test.
+
+**Follow-up prompt (if needed):**
+>
+
+**What was lacking after the first prompt:**
+
+---
+
+## Problem 9: Finish the Harness
+
+**Prompt 1:**
+> Problem 9: Finish the harness. Complete output/harness.md so a manager can understand the system. Include:
+>
+> * all tools the agent uses
+> * its abilities
+> * the pydantic models
+> * safety rules
+> * specs, such as max loop iterations, how many frames you sample from videos, and any other limits that matter
+>
+> Keep the other harness sections. This problem is just about making the whole document coherent and complete.
 
 **Follow-up prompt (if needed):**
 >

@@ -14,7 +14,7 @@ This folder contains:
 - `agent.py` (Problems 3-5), the Campus Customs Pydantic AI agent; its tool logic is in `tools.py`, and all of its instructions are in `prompts/prompts.md`
 - `profiles/` for customer profile JSON files (`profile_student.json`, `profile_parent.json`), built by `make_profiles.py` (Problem 6)
 - `prompts/` for prompt files
-- `output/` for generated outputs, plus `output/harness.md` describing how the agent is kept fast and under control
+- `output/` for generated outputs: `catalog.json`, `identify_product.json`, `ad_effectiveness.json`, `audit_trail.json` (one entry per agent loop iteration), `agent_evaluation.md`, and `harness.md`, which explains the whole system
 - `data.zip`, the provided data (unzip it here to get `data/`)
 
 ## Data

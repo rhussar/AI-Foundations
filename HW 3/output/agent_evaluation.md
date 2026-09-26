@@ -70,3 +70,52 @@ python agent.py --image data/test_images/image_01_true.jpeg data/test_images/ima
 ## Bottom line
 
 For the job it's meant to do, flagging people wearing Campus Customs products for outreach, the agent works on every example it was given. It explains its answers, uses at most 7 images per photo (1 when there's no Yale branding), and finishes four photos in a few seconds. The next step is a harder, larger test set, not a redesign.
+
+---
+
+# Ad runs — judging the Campus Customs ad for a student and a parent
+
+**Verdict: the agent's analysis is good; its score isn't yet.** It read the ad accurately, found the ad's real weaknesses, and reasoned about each customer in very different, profile-specific terms. It gave both customers the same 5/10, though, even though its own point-by-point analysis says the ad fits the parent clearly worse. The written judgement is useful to a marketer today. The number shouldn't be used to compare customers until the score is tied more closely to the analysis.
+
+## How it was run
+
+```bash
+python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_student.json"
+python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_parent.json"
+```
+
+Model `gpt-5.6-luna` via Portkey. Both results are in `output/ad_effectiveness.json`, which has 2 entries because separate runs merge.
+
+| | Student (Maya, 19) | Parent (Tom, 53) |
+| --- | --- | --- |
+| Score / response | **5/10, might shop** | **5/10, might shop** |
+| Confidence | medium (capped: soundtrack not heard) | medium (capped: soundtrack not heard) |
+| Profile fit | 1 strong · 4 partial · 3 none · 0 negative | 1 strong · 2 partial · 4 none · **1 negative** |
+| Main reasons | Muted streetwear look and group belonging fit her; no brand, price, student deal or way to buy; basic designs she half-owns already | Classic navy basics fit his style; the young, music-video cast makes it feel "for someone else"; no quality, gifting, occasion or trust details |
+| Time and tokens | 16.9 s, 7,543 in / 1,789 out (includes watching the video) | 8.8 s, 2,993 in / 835 out (video analysis reused from the cache) |
+
+## What's good
+
+1. **An accurate read of the ad.** I checked the frames myself. The analysis is right that it's a 9-second, landscape, music-video-style clip of a lead in an arched "YALE" navy hoodie under a highway overpass, with a crowd in Yale gear, and **no Campus Customs name, no on-screen text and no call to action anywhere**. That last point is the ad's biggest real problem, and both judgements lead with it.
+2. **Genuinely profile-specific reasoning.** Almost nothing is shared between the two judgements beyond the missing branding:
+   - For Maya: price sensitivity, phone-first buying, "how is this different from the bookstore?", and landscape video being weaker on TikTok and Reels.
+   - For Tom: quality, sizing and returns, gifting and occasions (Family Weekend, Commencement), the sound-off Facebook habit, and the ad feeling aimed at students (marked **negative**).
+   Each point cites the profile field it comes from, which makes the judgements easy to check.
+3. **Actionable fixes.** For example: "add Campus Customs branding, student pricing or a limited event drop, and a phone-friendly call to action" for Maya; "recast the message for proud Yale parents and gifting occasions" for Tom. A marketer could brief an editor from either list.
+4. **Honest about what it can't hear.** The provider refused the audio in both runs, and both judgements say so in their misses and keep confidence at medium. None of them invents lyrics.
+5. **The Problem 5 run's mistakes didn't come back.** Its "high" confidence without audio is now capped. Its "vertical video" claim is gone: the judge was given the real format and used it correctly ("the landscape format is a weaker fit for her … Reels habits").
+6. **Efficient.** The parent run reused the student run's video analysis: no frames were re-sent, and it used less than half the tokens and time.
+
+## What's not good yet
+
+1. **The score doesn't separate the customers.** The parent's fit is clearly worse by the agent's own table (a negative point and 4 "none" against the student's 0 negatives and 3 "none"), yet both scores are 5. The model seems to anchor on the ad's general quality rather than on the fit it just listed. Right now, the written judgement is more trustworthy than the number.
+2. **The soundtrack isn't judged at all.** A parody of a song ("ad_humble") gets much of its meaning from the music and lyrics, and the provider behind Portkey accepts only text and images. The visual judgement is sound, but it covers half the ad. Both verdicts rightly flag this.
+3. **An uncertain detail was treated as fact.** The video analysis says a group "stands around a person dressed in black lying on the dirt" (1.5 s). Looking at the frame, it could be a person or a pile of black coats. The student judgement then calls it a possibly off-putting image. It's minor, but it shows the judge trusts every line of the description equally.
+4. **Neither the profiles nor the judgements were checked against real people.** I wrote both personas. A real student or parent watching the ad is the only real test of whether "5/10, might shop" is right.
+
+## What I'd do next
+
+1. **Tie the score to the analysis:** have the judge score after listing the fit, and check in code that more `negative`/`none` points can't produce the same or a higher score than a better fit. Or compute a fit score from the table and have the model explain any gap.
+2. **Get the soundtrack in**, through a provider route that accepts audio or a transcription step, and re-judge.
+3. **Ask the vision step to mark uncertain details** ("possibly a person lying down") so the judge can weigh them.
+4. **Test on more ads**, including a deliberately good one (branded, with a call to action) and a clearly wrong-audience one. The scores should spread out; if everything lands on 5, the scale isn't working.

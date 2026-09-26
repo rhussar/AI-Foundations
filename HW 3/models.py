@@ -8,6 +8,8 @@ ProductIdentification is the agent's answer to "is a Campus Customs product in t
 one?". PhotoObservation and MatchVerdict are what the two vision steps inside that tool return.
 
 AdEffectiveness is the agent's answer to "how well would this ad video work on this customer?".
+AuditEntry is one record in output/audit_trail.json, one per agent loop iteration.
+
 CustomerProfile is the customer profile it reads (profiles/*.json, built by make_profiles.py);
 VideoAnalysis is what it saw and heard in the video.
 """
@@ -262,3 +264,24 @@ class AdEffectiveness(AdJudgement, AdSubject):
     """
 
     video_analysis: VideoAnalysis = Field(description="What the agent saw and heard, so the judgement can be checked.")
+
+
+# --- Problem 8: audit trail -----------------------------------------------------------------------
+
+
+class AuditEntry(BaseModel):
+    """One agent loop iteration, appended to output/audit_trail.json as it happens."""
+
+    run_id: str = Field(description="Groups the iterations of one agent run.")
+    request: str = Field(description="What the agent was asked to do.")
+    iteration: int = Field(description="Loop iteration within the run, starting at 1.")
+    time: str = Field(description="When the iteration finished (UTC, ISO 8601).")
+    model: str = Field(description="The model that ran the agent's loop.")
+    thoughts: list[str] = Field(description="The model's reasoning summary and any text it wrote this iteration.")
+    tool_name: str | None = Field(description="The tool the model called this iteration, if any.")
+    arguments: dict | None = Field(description="The arguments it passed to that tool.")
+    result_summary: str = Field(description="A short summary of what the tool returned (or why it was rejected).")
+    stop_reason: str | None = Field(
+        description="Why the run stopped after this iteration ('final answer', 'error: ...', 'iteration limit'); "
+        "null if the loop continued."
+    )

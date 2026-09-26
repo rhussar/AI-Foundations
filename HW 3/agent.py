@@ -13,6 +13,8 @@ Ability 2 (Problem 5): how well would this ad video get this customer to shop at
     (give several --profile files to judge the same video for each customer)
     -> output/ad_effectiveness.json, a list with one AdEffectiveness per video and profile
 
+Every run also appends one record per agent loop iteration to output/audit_trail.json.
+
 Results are merged into those files: a new result replaces the old one for the same photo (or the same
 video and profile) and keeps the rest, so separate runs for the student and the parent end up side by side.
 """
@@ -22,18 +24,28 @@ import asyncio
 import json
 import sys
 import time
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
-from pydantic_ai import Agent, ModelRetry, RunContext, ToolOutput
+from pydantic_ai import Agent, ModelRetry, RunContext, ToolOutput, UsageLimitExceeded
+from pydantic_ai.messages import RetryPromptPart, TextPart, ThinkingPart, ToolCallPart, ToolReturnPart
 from pydantic_ai.models.openai import OpenAIResponsesModelSettings
+from pydantic_ai.usage import UsageLimits
 
 import tools
-from models import AdEffectiveness, ProductIdentification
+from models import AdEffectiveness, AuditEntry, ProductIdentification
 from portkey_client import ALLOWED_MODELS, MODEL, OUTPUT_DIR, build_agent_model, is_image_refused
 
 
 IDENTIFY_OUT_PATH = OUTPUT_DIR / "identify_product.json"
 AD_OUT_PATH = OUTPUT_DIR / "ad_effectiveness.json"
+AUDIT_PATH = OUTPUT_DIR / "audit_trail.json"
+
+# The agent's loop: each iteration is one model call that may call a tool. A normal run takes 1
+# (it calls an ability, whose result is the answer); a mistaken path adds one per retry.
+MAX_AGENT_ITERATIONS = 4
+SUMMARY_LENGTH = 300
 
 
 # --- The agent's abilities (logic in tools.py) ---------------------------------------------------
@@ -78,7 +90,8 @@ def build_agent(model_name: str = MODEL):
             ToolOutput(identify_product, name="identify_product"),
             ToolOutput(judge_ad_effectiveness, name="judge_ad_effectiveness"),
         ],
-        model_settings=OpenAIResponsesModelSettings(max_tokens=2000, timeout=300.0),
+        # Reasoning summaries are what the audit trail records as the agent's thoughts.
+        model_settings=OpenAIResponsesModelSettings(max_tokens=2000, timeout=300.0, openai_reasoning_summary="auto"),
         retries=2,
     )
 
@@ -147,15 +160,125 @@ def describe_ad_result(result: AdEffectiveness):
     )
 
 
+# --- Audit trail ---------------------------------------------------------------------------------
+
+_audit_lock = asyncio.Lock()  # several runs can append at the same time
+
+
+async def append_audit(entry: AuditEntry, path: Path | None = None):
+    """Append one entry to the audit trail right away, so it survives a crash later in the run."""
+    path = path or AUDIT_PATH
+    async with _audit_lock:
+        try:
+            rows = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+        except json.JSONDecodeError:
+            path.rename(path.with_suffix(f".damaged-{int(time.time())}.json"))  # keep it; start a fresh trail
+            rows = []
+        rows.append(entry.model_dump())
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def short(text: str, limit: int = SUMMARY_LENGTH):
+    text = " ".join(str(text).split())
+    return text if len(text) <= limit else text[: limit - 1] + "…"
+
+
+def summarize_output(output):
+    if isinstance(output, ProductIdentification):
+        return short(describe_identification(output))
+    if isinstance(output, AdEffectiveness):
+        return short(describe_ad_result(output))
+    return short(repr(output))
+
+
+class RunAuditor:
+    """Turns the agent's loop into AuditEntry records, one per iteration.
+
+    An iteration is: the model responds (thoughts + a tool call), then the tool runs. Its result shows up
+    either as the next request to the model (a tool return or a retry) or as the run's final output.
+    """
+
+    def __init__(self, request: str, model_name: str):
+        self.run_id = uuid.uuid4().hex[:12]
+        self.request = short(request)
+        self.model_name = model_name
+        self.iteration = 0
+        self.pending = []  # (thoughts, tool call) from the latest model response, waiting for results
+
+    def _entries(self, results: dict, stop_reason):
+        now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        thoughts, calls = self.pending
+        base = dict(run_id=self.run_id, request=self.request, iteration=self.iteration, time=now, model=self.model_name)
+        if not calls:
+            return [AuditEntry(**base, thoughts=thoughts, tool_name=None, arguments=None,
+                               result_summary=results.get(None, "no tool called"), stop_reason=stop_reason)]
+        return [
+            AuditEntry(**base, thoughts=thoughts, tool_name=call.tool_name, arguments=call.args_as_dict(),
+                       result_summary=results.get(call.tool_call_id, "no result"), stop_reason=stop_reason)
+            for call in calls
+        ]
+
+    def model_responded(self, response):
+        self.iteration += 1
+        thoughts = [p.content for p in response.parts if isinstance(p, ThinkingPart) and p.content]
+        thoughts += [p.content for p in response.parts if isinstance(p, TextPart) and p.content.strip()]
+        calls = [p for p in response.parts if isinstance(p, ToolCallPart)]
+        self.pending = ([short(t, 1000) for t in thoughts], calls)
+
+    async def tools_answered(self, request):
+        """The next request carries the results of the pending tool calls: the loop goes on."""
+        if not self.pending:
+            return
+        results = {}
+        for part in request.parts:
+            if isinstance(part, ToolReturnPart):
+                results[part.tool_call_id] = short(part.content)
+            elif isinstance(part, RetryPromptPart):
+                results[part.tool_call_id] = short(f"rejected, model asked to retry: {part.model_response()}")
+        for entry in self._entries(results, None):
+            await append_audit(entry)
+        self.pending = []
+
+    async def finished(self, output=None, error: str | None = None):
+        if not self.pending:  # the run failed before the model answered at all
+            self.iteration += 1
+            self.pending = ([], [])
+        _, calls = self.pending
+        summary = summarize_output(output) if output is not None else short(error or "")
+        results = {call.tool_call_id: summary for call in calls} | {None: summary}
+        stop = "final answer" if error is None else error if error == "iteration limit" else f"error: {short(error, 200)}"
+        for entry in self._entries(results, stop):
+            await append_audit(entry)
+        self.pending = []
+
+
 async def run_request(agent: Agent, request: str, label: str, expected_type: type, deps: tools.AgentDeps, describe):
-    """Run the agent on one request. Each request gets its own deps, so its images and tokens are its own."""
+    """Run the agent on one request, auditing every loop iteration. Each request has its own deps."""
+    auditor = RunAuditor(request, agent.model.model_name)
     started = time.perf_counter()
     try:
-        result = await agent.run(request, deps=deps)
+        async with agent.iter(request, deps=deps, usage_limits=UsageLimits(request_limit=MAX_AGENT_ITERATIONS)) as agent_run:
+            async for node in agent_run:
+                if Agent.is_call_tools_node(node):
+                    auditor.model_responded(node.model_response)
+                elif Agent.is_model_request_node(node):
+                    await auditor.tools_answered(node.request)
+            result = agent_run.result
+    except UsageLimitExceeded:
+        await auditor.finished(error="iteration limit")
+        return label, None, f"stopped after {MAX_AGENT_ITERATIONS} loop iterations without an answer"
     except Exception as error:
-        if is_image_refused(error):
-            return label, None, "the model provider's content filter refused an image, so it could not be checked"
-        return label, None, f"{type(error).__name__}: {error}"
+        refused = is_image_refused(error)
+        message = (
+            "the model provider's content filter refused an image, so it could not be checked"
+            if refused
+            else f"{type(error).__name__}: {error}"
+        )
+        await auditor.finished(error=message)
+        return label, None, message
+
+    await auditor.finished(output=result.output)
     if not isinstance(result.output, expected_type):
         return label, None, f"the agent used the wrong ability and returned {type(result.output).__name__}"
 

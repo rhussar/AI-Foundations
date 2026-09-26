@@ -157,10 +157,16 @@ def load_catalog(path: Path = CATALOG_PATH):
 
 
 def resolve_path(path_text: str, suffixes: set[str], kind: str):
-    """Find a file whether its path is relative to the current folder or to the HW 3 folder."""
+    """Find a file whether its path is relative to the current folder or to the HW 3 folder.
+
+    Safety rule 6: only files inside the HW 3 workspace can be read, whatever path the model passes.
+    """
     for candidate in (Path(path_text), ROOT / path_text):
         if candidate.is_file() and candidate.suffix.lower() in suffixes:
-            return candidate.resolve()
+            resolved = candidate.resolve()
+            if not resolved.is_relative_to(ROOT):
+                raise FileNotFoundError(f"{path_text!r} is outside the Campus Customs workspace, so it can't be used.")
+            return resolved
     raise FileNotFoundError(f"No {kind} found at {path_text!r}.")
 
 
