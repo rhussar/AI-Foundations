@@ -14,19 +14,27 @@ Try a few first:  python build_catalog.py --limit 5
 import argparse
 import asyncio
 import hashlib
-import io
 import json
 import sys
 import time
 from pathlib import Path
 
-from PIL import Image
 from pydantic import ValidationError
 from pydantic_ai import Agent, BinaryContent
 from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 
 from models import CatalogEntry, ProductAttributes
-from portkey_client import ALLOWED_MODELS, DATA_DIR, MODEL, OUTPUT_DIR, PROMPTS_DIR, ROOT, build_agent_model
+from portkey_client import (
+    ALLOWED_MODELS,
+    DATA_DIR,
+    MODEL,
+    OUTPUT_DIR,
+    PROMPTS_DIR,
+    ROOT,
+    build_agent_model,
+    is_image_refused,
+    shrink_image,
+)
 
 
 PROMPT_PATH = PROMPTS_DIR / "catalog_extract.md"
@@ -43,16 +51,6 @@ ID_FIELDS = ("product_id", "image_file", "image_sha256")
 
 def file_sha256(path: Path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def shrink_image(path: Path):
-    """Return the photo as JPEG bytes, scaled down so its longest side is at most MAX_IMAGE_SIDE."""
-    with Image.open(path) as image:
-        image = image.convert("RGB")
-        image.thumbnail((MAX_IMAGE_SIDE, MAX_IMAGE_SIDE))
-        buffer = io.BytesIO()
-        image.save(buffer, format="JPEG", quality=90)
-    return buffer.getvalue()
 
 
 def find_products(products_dir: Path):
@@ -98,7 +96,7 @@ def build_agent(model_name: str, reasoning_effort: str):
 
 
 async def describe_product(agent: Agent, path: Path, sha256: str, semaphore: asyncio.Semaphore):
-    image_bytes = await asyncio.to_thread(shrink_image, path)
+    image_bytes = await asyncio.to_thread(shrink_image, path, MAX_IMAGE_SIDE)
     async with semaphore:
         result = await agent.run(
             [f"Product photo file name: {path.name}", BinaryContent(data=image_bytes, media_type="image/jpeg")]
@@ -157,16 +155,27 @@ async def build_catalog(args):
 
     # Canary: send one photo on its own first. If the key, network or model settings are wrong,
     # this fails once instead of failing (and possibly billing) every photo in parallel.
-    canary, rest = todo[0], todo[1:]
-    try:
-        entry, usage = await describe_product(agent, canary, hashes[canary], semaphore)
-    except Exception as error:
-        print(f"First request failed, so the other {len(rest)} were not sent.\n{type(error).__name__}: {error}")
-        return 1
-    entries[entry.product_id] = entry
-    input_tokens += usage.input_tokens
-    output_tokens += usage.output_tokens
-    print(f"[1/{len(todo)}] {canary.stem}")
+    # A photo refused by the content filter only says that photo is a problem, so it is recorded
+    # as a failure and the next photo becomes the canary.
+    failures = {}
+    queue = list(todo)
+    while queue:
+        canary = queue.pop(0)
+        done = len(failures) + 1
+        try:
+            entry, usage = await describe_product(agent, canary, hashes[canary], semaphore)
+        except Exception as error:
+            if is_image_refused(error):
+                failures[canary.stem] = f"{type(error).__name__}: {error}"
+                print(f"[{done}/{len(todo)}] {canary.stem}  REFUSED by content filter; trying the next photo")
+                continue
+            print(f"First request failed, so the other {len(queue)} were not sent.\n{type(error).__name__}: {error}")
+            return 1
+        entries[entry.product_id] = entry
+        input_tokens += usage.input_tokens
+        output_tokens += usage.output_tokens
+        print(f"[{done}/{len(todo)}] {canary.stem}")
+        break
 
     async def describe_or_fail(path: Path):
         try:
@@ -174,9 +183,8 @@ async def build_catalog(args):
         except Exception as error:
             return path, None, None, error
 
-    failures = {}
-    tasks = [describe_or_fail(path) for path in rest]
-    for done, finished in enumerate(asyncio.as_completed(tasks), start=2):
+    tasks = [describe_or_fail(path) for path in queue]
+    for done, finished in enumerate(asyncio.as_completed(tasks), start=len(todo) - len(queue) + 1):
         path, entry, usage, error = await finished
         if error:
             failures[path.stem] = f"{type(error).__name__}: {error}"

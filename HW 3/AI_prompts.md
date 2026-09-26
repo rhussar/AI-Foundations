@@ -35,3 +35,30 @@ The first prompt only named the problem, so it didn't say how the prompt log sho
 **What was lacking after the first prompt:**
 
 ---
+
+## Problem 3: Product Identify Agent
+
+**Prompt 1:**
+> Problem 3: Product Identify Agent. Build a campus customs agent as four files:
+>
+> * prompts/prompts.md: This is the system prompt. Load into the agent we will add to this later.
+> * agents.py: This will be the Pydantic AI agent entry point.
+> * tools.py
+> * models.py
+>
+> Its first ability: take an image and decide whether a campus customs product appears in it and which one, if you can tell. Implement that tool logic in tools.py and wire it from agents.py.
+>
+> Find a way to do this without checking every catalog image one at a time and without sending more than 10. Add the structured return type for this ability to models.py.
+>
+> The agent must take a image path from the terminal. python agent.py --image "data/test_images/example.jpg"
+>
+> Agent.py is your campus customs agent entry point. `--image` is the photo to check for campus customs product, and then replace the path to the real file under data when you test. Save the agent's structured output for this run to output/identify_product.json. One test image is enough.
+>
+> In output/harness.md, write how your agent does product identification and what you did to make it efficient. Which fields are in your identity model in models.py, and why you chose those fields?
+
+**Follow-up prompt (if needed):**
+>
+
+**What was lacking after the first prompt:**
+
+---

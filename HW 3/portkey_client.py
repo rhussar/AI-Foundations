@@ -1,17 +1,18 @@
 """Shared Portkey/OpenAI setup for Homework 3.
 
-Every HW 3 script imports build_client() and MODEL from here so routing stays in one place.
+Every HW 3 script gets its Portkey client, model names and image helpers from here, so routing stays in one place.
 Run this file directly to check the connection:  python portkey_client.py
 """
 
-import base64
-import mimetypes
+import io
 import os
 import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 from openai import APIConnectionError, AsyncOpenAI, AuthenticationError, OpenAI
+from PIL import Image
+from pydantic_ai.exceptions import ModelHTTPError
 from pydantic_ai.models.openai import OpenAIResponsesModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
@@ -73,11 +74,27 @@ def build_agent_model(model_name: str = MODEL, max_retries: int = 3):
     return OpenAIResponsesModel(model_name, provider=OpenAIProvider(openai_client=client))
 
 
-def image_to_data_url(path: Path):
-    """Encode a local image so it can be sent as an input_image to the Responses API."""
-    mime_type = mimetypes.guess_type(path.name)[0] or "image/jpeg"
-    encoded = base64.b64encode(Path(path).read_bytes()).decode("ascii")
-    return f"data:{mime_type};base64,{encoded}"
+def shrink_image(path: Path, max_side: int):
+    """Return the image as JPEG bytes, scaled down so its longest side is at most max_side pixels."""
+    with Image.open(path) as image:
+        image = image.convert("RGB")
+        image.thumbnail((max_side, max_side))
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG", quality=90)
+    return buffer.getvalue()
+
+
+def is_image_refused(error: Exception):
+    """True when the provider's content filter refused this particular image.
+
+    That is a problem with one photo, not with the key, network or settings, so callers can skip the
+    photo and carry on instead of stopping the whole run.
+    """
+    return (
+        isinstance(error, ModelHTTPError)
+        and error.status_code == 400
+        and "content_policy" in str(error.body).lower()
+    )
 
 
 def check_connection():

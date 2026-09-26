@@ -14,7 +14,9 @@ The slow part is waiting for the model: each photo is one request, and most of t
 
 **1. Concurrent requests (the main speed-up).** The script sends the requests at the same time with Python's `asyncio`, keeping up to 16 in flight (`--concurrency`). When one finishes, the next photo starts. The total time is roughly *(102 ÷ 16) × one request* instead of *102 × one request*.
 
-In an offline test with a stand-in model that takes 0.5 seconds per photo, one-at-a-time took 10.2 s for 20 photos, which works out to about 52 s for all 102. The concurrent loop did all 102 in **4.3 s, about 12× faster**. Real requests take longer than 0.5 s, so the time saved in a real run is larger still.
+In an offline test with a stand-in model that takes 0.5 seconds per photo, one-at-a-time took 10.2 s for 20 photos, which works out to about 52 s for all 102. The concurrent loop did all 102 in **4.3 s, about 12× faster**.
+
+In the real run through Portkey, the concurrent loop described **94 photos in 23.6 seconds**, using 146,505 input and 14,373 output tokens. A 5-photo test before it took 8.6 s.
 
 **Why this loop and not the alternatives:**
 
@@ -34,6 +36,7 @@ In an offline test with a stand-in model that takes 0.5 seconds per photo, one-a
 ### Guardrails
 
 - **Canary request.** The first photo is sent on its own. If the key, the network or a model setting is wrong, the run stops after one failed request instead of sending (and possibly paying for) 102 at once.
+- **A refused photo is not a broken run.** The Azure content filter behind Portkey wrongly refuses 3 ordinary college-crest photos (`benjamin-franklin-t-shirt`, `berkeley-1-4-zip`, `timothy-dwight-college-crewneck`), and refuses them every time. At first, a refused photo that happened to be the canary stopped the whole build. Now a refusal is recorded as that photo's failure and the next photo becomes the canary. The catalog has **99 of 102 products**, and those 3 are listed as failures on every run rather than skipped silently.
 - **Concurrency cap.** No more than 16 requests are in flight, so the run doesn't set off Portkey's or OpenAI's rate limits.
 - **Retries with backoff.** A request that hits a rate limit or a server error is retried automatically (up to 3 times) with increasing waits. An answer that doesn't fit the catalog model is sent back to the model to fix, up to 2 times.
 - **Timeouts.** Each request is abandoned after 120 seconds, so one stuck call cannot hang the build.
@@ -67,3 +70,71 @@ The fields are chosen for the two growth questions the agent has to answer:
 - **Would an ad land with a given customer?** That needs who the product is for: affiliation and audience.
 
 Fields that can't be seen in a photo, such as price, sizes and fabric, are left out because the model would have to guess them.
+
+---
+
+## Problem 3: Product identification
+
+`agent.py` is the Campus Customs agent. It's a Pydantic AI agent whose system prompt is `prompts/prompts.md`. Its first ability answers: *is someone in this photo wearing a Campus Customs product, and which one?*
+
+```bash
+python agent.py --image "data/test_images/image_01_true.jpeg"
+```
+
+The structured answer is saved to `output/identify_product.json`.
+
+### How the agent identifies a product
+
+The agent reads the request and calls its `identify_product` tool with the photo path. The tool's logic lives in `tools.py` and runs in three steps:
+
+| Step | What happens | Images sent |
+| --- | --- | --- |
+| **1. Look at the photo** | One vision call lists each printed garment people are wearing: garment type, color, the exact printed words, logos, where the design sits, and whether the garment itself is Yale-branded | 1 |
+| **2. Shortlist in code** | Plain Python scores all 99 catalog entries against what was seen, using the text fields from Problem 2's catalog. No model call and no images. The top 5 go forward | 0 |
+| **3. Compare side by side** | One vision call sees the photo next to those 5 catalog photos and picks the product, says which few it could be, or says none of them | 1 + 5 |
+
+**If step 1 finds no Yale branding, the agent stops there** and answers "no Campus Customs product" after sending just 1 image. The Yale branding has to be on the clothing: a Yale building in the background doesn't count. That matters for test photo 4, where a woman in a navy Balenciaga tee stands in front of a Yale gate.
+
+### What makes it efficient
+
+- **No image-by-image catalog search.** Comparing the photo with each of 99 catalog photos would take 99 image comparisons. Instead, the catalog built in Problem 2 is searched as text, in code, for free. Only the 5 most likely products are ever looked at as images.
+- **Smart scoring.** The shortlist gives most weight to printed words and logos, and weights each word by how rare it is in the catalog. "DAD", "BULLDOGS" or "DAVENPORT" count far more than "YALE", which is on nearly everything. Garment type, color and design placement break ties. Tests against the real catalog put the right product in the top 5 each time, next to the look-alikes that step 3 has to tell apart:
+  - Yale Dad tee → `yale-dad-t-shirt`, `yale-dad-hoodie`, `yale-dad-crewneck`, …
+  - Navy "YALE BULLDOGS" long-sleeve → `dry-zone-long-sleeve`, `yale-maplehouse-diana-mockneck`, `ua-mens-tech-l-s-2-0`, …
+  - Balenciaga tee → no candidates, so the agent stops after 1 image
+- **Hard image limit.** A normal run sends **7 images**, and never more than 10:
+  - Every upload is counted, and `images_sent` is saved in the output.
+  - A retry re-sends every image in the request, so retries count too.
+  - Step 1 may retry once, and step 3 never retries, so the worst case is 8. A check in the code blocks any send that would go over 10.
+- **Right-sized images.** The customer photo is sent at up to 1024 px, because its printing is small, angled and partly hidden. The flat catalog photos only need 512 px.
+- **Two vision calls, one cheap routing call.** The agent's own call only routes the request, and it sends no images. Everything uses `gpt-5.6-luna` by default. `--vision-model gpt-5.6-terra` switches the photo checks to a smarter model if harder photos need it.
+
+### Guardrails
+
+- **The model can only pick products it was shown.** If step 3 names a product outside its shortlist, or says "found" without naming a shortlisted product, the code corrects the answer and marks it low confidence, instead of asking again and re-sending 6 images.
+- **Honest uncertainty.** When the product clearly appears but the agent can't tell which of two or three look-alikes it is (for example the tee, crewneck and hoodie versions of "YALE DAD"), it says so in `possible_product_ids` instead of guessing.
+- **The tool's answer is the final answer.** `identify_product` is the agent's output tool, so its structured result is returned exactly as built. The agent can't reword it or make up a product.
+- **Bad paths are caught.** If the agent passes a path that doesn't exist, the tool rejects it and the agent retries with the exact path from the request.
+- **Content-filter refusals are reported clearly**, as a refused photo rather than a crash.
+
+### The identification model (`models.py`)
+
+The tool returns a `ProductIdentification`:
+
+| Field | Example | Why it's there |
+| --- | --- | --- |
+| `image_path` | `data/test_images/image_01_true.jpeg` | Which photo the answer is about |
+| `product_found` | `true` | The main yes/no: is this person worth outreach? |
+| `product_id` | `yale-dad-t-shirt` | Which exact product, as a catalog key. It links to everything else we know about the product, such as its audience, and is `null` when the agent can't tell |
+| `product_name` | `Yale Dad T-Shirt` | Readable name for people and outreach messages |
+| `possible_product_ids` | `["yale-dad-t-shirt", "yale-dad-crewneck"]` | Covers "which one, *if you can tell*": when the product clearly appears but look-alikes can't be told apart, the agent names the few it could be instead of guessing |
+| `confidence` | `high` / `medium` / `low` | Lets outreach focus on sure matches first. Three plain levels, because a model's made-up percentages aren't meaningful |
+| `evidence` | `["navy YALE over DAD across the chest", "short sleeves"]` | The visible details behind the decision, so a person can check it in seconds |
+| `summary` | "The man is wearing the Yale Dad tee…" | Plain-language explanation |
+| `observed_garments` | garment, color, text, logos, Yale branding | What the agent actually saw. When an answer is wrong, this shows whether the photo was misread (step 1) or the product mis-picked (step 3) |
+| `candidates_checked` | the 5 shortlisted product IDs | Shows the agent only compared a shortlist, and whether the right product made it into the shortlist |
+| `images_sent` | `7` | Proves each run stayed within the 10-image limit |
+
+The two vision steps have their own smaller models:
+- `PhotoObservation` is a list of `ObservedGarment`, using the same garment, color, text, graphics and placement fields as the catalog, so the two can be compared directly.
+- `MatchVerdict` holds the step-3 decision.

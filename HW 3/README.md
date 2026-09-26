@@ -9,8 +9,9 @@ All model calls go through Portkey with `PORTKEY_API_KEY`, using one of `gpt-5.6
 This folder contains:
 - `AI_prompts.md` for recording prompts used during Homework 3
 - `portkey_client.py`, the shared Portkey/OpenAI client every HW 3 script imports
-- `models.py`, the Pydantic models shared by the scripts (`CatalogEntry`)
+- `models.py`, the Pydantic models shared by the scripts (`CatalogEntry`, `ProductIdentification`)
 - `build_catalog.py` (Problem 2), which turns the product photos into `output/catalog.json`
+- `agent.py` (Problem 3), the Campus Customs Pydantic AI agent; its tool logic is in `tools.py` and its system prompt in `prompts/prompts.md`
 - `prompts/` for prompt files
 - `output/` for generated outputs, plus `output/harness.md` describing how the agent is kept fast and under control
 - `data.zip`, the provided data (unzip it here to get `data/`)
@@ -38,6 +39,12 @@ python portkey_client.py   # checks the key and the connection to Portkey
 ```bash
 python build_catalog.py --limit 5   # cheap test on 5 photos
 python build_catalog.py             # all photos; re-runs skip products already catalogued
+```
+
+## Run the agent (Problem 3)
+
+```bash
+python agent.py --image "data/test_images/image_01_true.jpeg"   # saves output/identify_product.json
 ```
 
 The scripts read `PORTKEY_API_KEY` from `HW 3/.env` or the workspace `.env`, or from the environment.
