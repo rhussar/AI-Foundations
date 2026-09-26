@@ -9,6 +9,8 @@ __pycache__/
 
 # unzipped course data (the zip itself is committed)
 HW 3/data/
+# cached video analyses (re-created on demand)
+HW 3/output/cache/
 
 # macOS
 .DS_Store

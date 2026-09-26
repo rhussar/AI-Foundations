@@ -9,9 +9,10 @@ All model calls go through Portkey with `PORTKEY_API_KEY`, using one of `gpt-5.6
 This folder contains:
 - `AI_prompts.md` for recording prompts used during Homework 3
 - `portkey_client.py`, the shared Portkey/OpenAI client every HW 3 script imports
-- `models.py`, the Pydantic models shared by the scripts (`CatalogEntry`, `ProductIdentification`)
+- `models.py`, the Pydantic models shared by the scripts (`CatalogEntry`, `ProductIdentification`, `CustomerProfile`, `AdEffectiveness`)
 - `build_catalog.py` (Problem 2), which turns the product photos into `output/catalog.json`
-- `agent.py` (Problem 3), the Campus Customs Pydantic AI agent; its tool logic is in `tools.py` and its system prompt in `prompts/prompts.md`
+- `agent.py` (Problems 3-5), the Campus Customs Pydantic AI agent; its tool logic is in `tools.py`, and all of its instructions are in `prompts/prompts.md`
+- `profiles/` for customer profile JSON files (`profile_student.json`)
 - `prompts/` for prompt files
 - `output/` for generated outputs, plus `output/harness.md` describing how the agent is kept fast and under control
 - `data.zip`, the provided data (unzip it here to get `data/`)
@@ -49,5 +50,13 @@ python agent.py --image data/test_images/*.jpeg                  # all four test
 ```
 
 Results are saved to `output/identify_product.json` as a list with one `ProductIdentification` per photo.
+
+## Judge an ad for a customer (Problem 5)
+
+```bash
+python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_student.json"
+```
+
+Results are saved to `output/ad_effectiveness.json` as a list with one `AdEffectiveness` per profile. Give several `--profile` files to judge the same video for each; the video is analysed once and cached in `output/cache/`.
 
 The scripts read `PORTKEY_API_KEY` from `HW 3/.env` or the workspace `.env`, or from the environment.

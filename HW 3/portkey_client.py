@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from openai import APIConnectionError, AsyncOpenAI, AuthenticationError, OpenAI
 from PIL import Image
 from pydantic_ai.exceptions import ModelHTTPError
-from pydantic_ai.models.openai import OpenAIResponsesModel
+from pydantic_ai.models.openai import OpenAIChatModel, OpenAIResponsesModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
 
@@ -55,11 +55,12 @@ def build_client():
     )
 
 
-def build_agent_model(model_name: str = MODEL, max_retries: int = 3):
+def build_agent_model(model_name: str = MODEL, max_retries: int = 3, api: str = "responses"):
     """Pydantic AI model routed through Portkey, for scripts that run an Agent.
 
     One AsyncOpenAI client is shared by every request, so concurrent calls reuse its connection pool.
     max_retries lets the client back off and retry on rate limits (429) and server errors.
+    api="chat" uses the Chat Completions API instead of Responses; only Chat Completions accepts audio.
     """
     if model_name not in ALLOWED_MODELS:
         raise ValueError(f"{model_name} is not allowed for HW 3. Pick one of: {', '.join(ALLOWED_MODELS)}")
@@ -71,7 +72,10 @@ def build_agent_model(model_name: str = MODEL, max_retries: int = 3):
         default_headers={"x-portkey-api-key": api_key, "x-portkey-provider": "openai"},
         max_retries=max_retries,
     )
-    return OpenAIResponsesModel(model_name, provider=OpenAIProvider(openai_client=client))
+    provider = OpenAIProvider(openai_client=client)
+    if api == "chat":
+        return OpenAIChatModel(model_name, provider=provider)
+    return OpenAIResponsesModel(model_name, provider=provider)
 
 
 def shrink_image(path: Path, max_side: int):

@@ -153,3 +153,74 @@ The tool returns a `ProductIdentification`:
 The two vision steps have their own smaller models:
 - `PhotoObservation` is a list of `ObservedGarment`, using the same garment, color, text, graphics and placement fields as the catalog, so the two can be compared directly.
 - `MatchVerdict` holds the step-3 decision.
+
+---
+
+## Problem 5: Judging an ad video for a customer
+
+The agent's second ability answers: *how effective would this ad video be at getting this customer to shop at Campus Customs?*
+
+```bash
+python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_student.json"
+```
+
+The structured answer goes to `output/ad_effectiveness.json`, as a list with one entry per profile. Several `--profile` files can be given; the video is analysed once and judged for each.
+
+**One prompt file.** Every instruction the agent uses lives in `prompts/prompts.md`:
+- The top part is the agent's system prompt. It now describes both abilities and when to use each.
+- Below the line `# Tool step instructions`, each model call inside the tools has its own `##` section, which the tool loads by its heading.
+
+The photo steps from Problem 3 were moved into the same file, so there's no second agent prompt file. (`prompts/catalog_extract.md` belongs to `build_catalog.py`, the separate Problem 2 script, not to the agent.)
+
+### The tools for the video + profile job
+
+The agent calls `judge_ad_effectiveness(video_path, profile_path)`. Inside `tools.py`, that runs these tools:
+
+| Tool | What it does | Model call? |
+| --- | --- | --- |
+| `load_profile` | Reads the profile JSON and checks it against `CustomerProfile` in `models.py`, so a broken profile fails clearly instead of confusing the judge | No |
+| `extract_frames` | Takes about one frame per second (the middle of each second, which skips fades), drops frames that barely differ from the last one kept, and stops at 10. The 9-second ad gives 9 frames at 768 px. Its camera never stops moving, so no frame was dropped as a near-duplicate; on a static video that check saves images | No |
+| `watch_video` | One vision call sees the frames in order, each labelled with its time. It describes the scenes, the people, the setting, each distinct garment design (read like a product photo), on-screen text, Campus Customs branding, the call to action, the tone and the apparent message. It describes but doesn't judge | Yes, 1 call with 9 images |
+| `extract_audio` + `listen_to_audio` | The soundtrack is pulled out with ffmpeg (16 kHz mono WAV). The Responses API the agent uses can't take audio, so this call goes through the Chat Completions API. If the model accepts audio, it describes the lyrics or speech, the music and the mood. If it doesn't, the analysis says so and why, and the judge is told not to guess what the soundtrack says | Yes, 1 call (may be refused) |
+| `match_featured_products` | Matches each Yale garment seen in the ad to its closest catalog product, using the same text scorer as Problem 3's shortlist, and only when the match is strong. The judge then knows who those products are made for (for example "students, alumni, fans") | No |
+| `analyze_video` | Runs the four steps above once per video and caches the result: shared in memory when several profiles are judged at once, and saved to `output/cache/` for later runs. The cache key includes the video's fingerprint, the model and the watch/listen instructions, so changing any of them triggers a fresh analysis. `--no-cache` forces one | No |
+| `judge_for_customer` | One **text-only** call gets the profile, the video analysis and the featured products' audiences, and returns the judgement. No images are re-sent: the video is judged from the analysis | Yes, 1 call, no images |
+
+**Why this split:**
+- Watching the video is the expensive part, and what the ad shows doesn't depend on who's watching. So it's done once, and only the cheap text judgement runs per customer. For Problem 7's several profiles, each extra customer costs one text call instead of nine more images.
+- Keeping the description and the judgement separate also keeps the description neutral: the vision step can't bend what it sees to fit a customer.
+
+### Guardrails
+
+- **Score and response must agree.** 7–10 means "likely to shop", 4–6 "might shop", 1–3 "unlikely to shop". A judgement that contradicts itself (for example 8/10 but "might shop") is sent back to be fixed. The judge step is text only, so a retry costs no images.
+- **No invented soundtrack.** If the audio wasn't analysed, the judge is told plainly and asked not to guess, and `audio_analyzed: false` with `audio_note` records why.
+- **Real problems count.** The judging instructions make no Campus Customs branding and no call to action count as weaknesses even when the ad looks great, because a customer who can't tell who's selling can't buy.
+- **Paths are checked before any model call.** A typo in `--video` or `--profile` stops the run with a clear message and costs nothing. Inside the agent, a wrong path makes the agent retry with the exact path.
+- **The right ability for the job.** The run checks that the agent answered with an `AdEffectiveness` for a video request, and a `ProductIdentification` for a photo request.
+
+### The ad-effectiveness model (`models.py`)
+
+The tool returns an `AdEffectiveness`:
+
+| Field | Example | Why it's there |
+| --- | --- | --- |
+| `video_path`, `profile_path`, `profile_name` | `data/videos/ad_humble.mp4`, `profiles/profile_student.json`, `Maya Chen, Yale sophomore` | Which ad and which customer the verdict is about. In Problem 7's list of results for several customers, each entry says whose it is |
+| `effectiveness_score` | `6` (1–10) | One number to compare the same ad across customers, or different ads for one customer. The prompt defines what each band means, so the numbers are consistent |
+| `likely_response` | `likely to shop` / `might shop` / `unlikely to shop` | The plain-language outcome a marketer acts on. Forced to agree with the score |
+| `confidence` | `medium` | How much to trust the verdict. For example, it should drop when the soundtrack couldn't be heard |
+| `profile_fit` | `[{profile_point: "streetwear style", ad_evidence: "oversized navy hoodie in a music-video look", fit: "strong"}, …]` | The core of the judgement: the 4–8 profile points that matter most, what in the ad speaks to each, and how well (`strong` / `partial` / `none` / `negative`). It makes the score explainable and checkable point by point, and forces the judge to reason from this customer's profile rather than about ads in general |
+| `what_works` | `["the style matches her streetwear taste"]` | What to keep |
+| `what_misses` | `["never says Campus Customs", "no call to action"]` | What to fix |
+| `suggested_changes` | `["end on the Campus Customs logo and a student discount code"]` | Turns the critique into concrete edits. That's the point of judging an ad |
+| `summary` | two or three sentences | The short version for someone skimming |
+| `video_analysis` | frames, scenes, garments, branding, call to action, audio, featured products | What the agent actually saw and heard. Anyone can check whether a bad verdict came from misreading the video or from judging it badly, and whether the soundtrack was part of the judgement |
+
+`CustomerProfile` (in `models.py` too) sets out what a profile file contains:
+- who the customer is and their relationship to Yale
+- interests, values and style
+- budget and price sensitivity
+- shopping and media habits
+- what they already own
+- what makes them buy, and their likely objections
+
+These are the facts that decide whether an ad persuades someone. Extra fields are allowed and passed through to the judge.

@@ -3,3 +3,4 @@ pydantic-ai-slim[openai]>=2.44
 python-dotenv>=1.0
 pillow>=11.0
 opencv-python-headless>=4.10
+imageio-ffmpeg>=0.5

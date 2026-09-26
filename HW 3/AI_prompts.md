@@ -74,3 +74,25 @@ The first prompt only named the problem, so it didn't say how the prompt log sho
 **What was lacking after the first prompt:**
 
 ---
+
+## Problem 5: Add Ad-Effectiveness Ability
+
+**Prompt 1:**
+> Problem 5: Add the abilities to the agent. Can take a video and a customer profile JSON file, then judge how effective the video would be at convincing that customer to shop at campus customs.
+>
+> * Put the new tool code in tools.py.
+> * Update the same prompts in prompts.md so the agent knows how to use this new ability.
+> * Do not start a second prompt file.
+> * Put the structure result type for this ability in models.py as a pydantic model.
+> * Wire the terminal the same way you will use in problem 7: python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_student.json"
+>
+> Save the agent structure output for this run to output/ad_effectiveness.json. One profile is enough here.
+>
+> In output/harness.md, write the tools you gave the agent for the video plus profile job. Which fields are you using in your ad effectiveness model in models.py, and why did you choose those fields?
+
+**Follow-up prompt (if needed):**
+>
+
+**What was lacking after the first prompt:**
+
+---
