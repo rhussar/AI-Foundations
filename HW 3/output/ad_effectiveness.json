@@ -1,79 +1,254 @@
 [
   {
     "video_path": "data/videos/ad_humble.mp4",
+    "profile_path": "profiles/profile_parent.json",
+    "profile_name": "Tom Brennan, father of a Yale sophomore",
+    "effectiveness_score": 5,
+    "likely_response": "might shop",
+    "confidence": "medium",
+    "profile_fit": [
+      {
+        "profile_point": "Pride in his daughter and belonging to the Yale family",
+        "ad_evidence": "The ad prominently shows YALE apparel and a large group presenting a confident sense of Yale affiliation.",
+        "fit": "partial"
+      },
+      {
+        "profile_point": "Classic, comfortable style centered on navy hoodies and other traditional Yale gear",
+        "ad_evidence": "The featured products are straightforward navy Yale hoodies and T-shirts, with clear center-chest Yale branding.",
+        "fit": "strong"
+      },
+      {
+        "profile_point": "Wants quality that lasts and is willing to pay $60–120",
+        "ad_evidence": "Nothing in the ad communicates fabric, construction, durability, price, or value.",
+        "fit": "none"
+      },
+      {
+        "profile_point": "Needs gear appropriate for a parent and not embarrassing to his daughter",
+        "ad_evidence": "The young-adult, music-video-style group and student-oriented setting make the ad feel aimed at students rather than Yale parents; nothing frames the products as tasteful family gear.",
+        "fit": "negative"
+      },
+      {
+        "profile_point": "Buys for himself, his wife, grandparents, and daughter as gifts",
+        "ad_evidence": "The ad shows only general apparel and gives no gifting, family, care-package, or seasonal context.",
+        "fit": "none"
+      },
+      {
+        "profile_point": "Often watches Facebook videos with the sound off",
+        "ad_evidence": "The video is visually understandable as Yale apparel, but has no on-screen text, shop branding, product details, or CTA, so silent viewing leaves little actionable information.",
+        "fit": "partial"
+      },
+      {
+        "profile_point": "Trusts clear product presentation and checks reviews, sizing, and return policy",
+        "ad_evidence": "The cinematic cuts and shallow focus show garments only briefly; there are no details about fit, sizing, reviews, returns, or shopping process.",
+        "fit": "none"
+      },
+      {
+        "profile_point": "Buys around Family Weekend, holidays, move-in, Commencement, and The Game",
+        "ad_evidence": "Nothing connects the apparel to these purchase occasions or creates urgency to shop now.",
+        "fit": "none"
+      }
+    ],
+    "what_works": [
+      "Navy Yale hoodies and T-shirts fit his established classic wardrobe and existing interest in Yale gear.",
+      "The strong Yale visibility communicates school pride and collective belonging.",
+      "The polished cinematic production may attract attention in a Facebook feed, even without sound."
+    ],
+    "what_misses": [
+      "There is no Campus Customs name, URL, product label, price, or call to action, so he cannot tell where or how to buy.",
+      "The ad does not establish quality, fabric, fit, sizing, durability, reviews, shipping, returns, or gift readiness.",
+      "The student/young-adult group and serious music-video tone may make him feel the merchandise is intended for students, not a proud but older Yale parent.",
+      "No soundtrack analysis was available; this judgment is based on the visuals and does not assess the audio."
+    ],
+    "suggested_changes": [
+      "Add a clearly readable end card for Campus Customs with the product names, website, and a direct instruction such as “Shop Yale gear at Campus Customs.”",
+      "Show close, well-lit product shots of the Basic Big Yale Hoodie and Big Yale Tri-Blend T-Shirt, including fabric texture, fit, Yale mark, available colors, and price.",
+      "Reframe the creative around “Yale Dad” or “Proud Yale Family,” featuring a tasteful parent wearing the navy hoodie or quarter-zip-style gear alongside a student, without implying that the shown products have a parent-specific design unless they do.",
+      "Add practical trust and conversion information: sizing, reviews, easy returns, shipping to home or campus, and gift-ready holiday or Family Weekend messaging."
+    ],
+    "summary": "The navy Yale basics fit Tom’s classic style and pride in his daughter, but the student-centered cinematic presentation risks making him feel the ad is for someone else. Add Campus Customs branding, a visible CTA, and concrete product and trust details, then recast the message for proud Yale parents and gifting occasions.",
+    "video_analysis": {
+      "video_path": "data/videos/ad_humble.mp4",
+      "duration_seconds": 9.04,
+      "resolution": "1920x1080",
+      "orientation": "landscape",
+      "frame_times_seconds": [
+        0.5,
+        1.5,
+        2.5,
+        3.5,
+        4.5,
+        5.5,
+        6.5,
+        7.5,
+        8.5
+      ],
+      "observation": {
+        "scenes": [
+          "0.5s: close-up of a young man in a navy hoodie speaking under a highway overpass, with several people behind him.",
+          "1.5s: overhead view of the lead man looking up and touching his chin; a group stands around a person dressed in black lying on the dirt.",
+          "2.5s: the overhead shot continues with the lead centered and the surrounding group blurred by motion.",
+          "3.5s: the lead faces the camera beneath the overpass while a larger group in Yale apparel stands behind him.",
+          "4.5s: the camera moves around the lead as he continues speaking, with the group blurred in the background.",
+          "5.5s: the lead remains in the foreground while a mixed group lines up between the concrete columns.",
+          "6.5s: tight close-up of the lead touching his chin, with the group out of focus behind him.",
+          "7.5s: the lead gestures at his neck as the assembled group fills the background.",
+          "8.5s: wider frontal shot of the lead and a large group standing together beneath the overpass."
+        ],
+        "people": "About 12–15 young adults, roughly late teens to 30s, including men and women who look like students or young adults; the lead is a young man wearing glasses, and one person in the early overhead shot is dressed in black on the ground.",
+        "setting": "An outdoor dirt area beneath and beside large concrete highway overpasses, with bridge beams and columns surrounding the group.",
+        "garments_shown": [
+          {
+            "worn_by": "the lead",
+            "garment_type": "hoodie",
+            "base_color": "navy",
+            "visible_text": [
+              "YALE"
+            ],
+            "graphics": [],
+            "design_placement": "center chest",
+            "has_yale_branding": true
+          },
+          {
+            "worn_by": "several people in the group",
+            "garment_type": "t-shirt",
+            "base_color": "navy",
+            "visible_text": [
+              "YALE"
+            ],
+            "graphics": [],
+            "design_placement": "center chest",
+            "has_yale_branding": true
+          },
+          {
+            "worn_by": "a person at the left side of the group",
+            "garment_type": "hoodie",
+            "base_color": "black",
+            "visible_text": [],
+            "graphics": [
+              "white Yale-style block Y emblem"
+            ],
+            "design_placement": "center chest",
+            "has_yale_branding": true
+          },
+          {
+            "worn_by": "a person on the right side of the group",
+            "garment_type": "hoodie",
+            "base_color": "navy",
+            "visible_text": [
+              "BROTHERHOOD"
+            ],
+            "graphics": [
+              "small circular emblem beneath the text"
+            ],
+            "design_placement": "center chest",
+            "has_yale_branding": false
+          },
+          {
+            "worn_by": "a person near the right side of the group",
+            "garment_type": "hoodie",
+            "base_color": "navy",
+            "visible_text": [
+              "YALE"
+            ],
+            "graphics": [],
+            "design_placement": "center chest",
+            "has_yale_branding": true
+          }
+        ],
+        "on_screen_text": [],
+        "shop_branding": null,
+        "call_to_action": null,
+        "style_and_tone": "Cinematic, music-video-style presentation with dramatic close-ups, shallow focus, motion blur, and a confident, serious mood.",
+        "apparent_message": "A group of young adults presents Yale-themed apparel with a strong sense of collective identity and confidence. The ad focuses on the clothing and the group’s Yale affiliation without showing a visible store name or direct purchase instruction."
+      },
+      "audio_analyzed": false,
+      "audio": null,
+      "audio_note": "The soundtrack could not be analysed (ModelHTTPError: status_code: 400, model_name: gpt-5.6-luna, body: {'message': \"azure-openai error: Invalid 'messages[1]'. Content blocks are expected to be either text or image_url type.\", 'type': 'invalid_request_error', 'param': 'messages[1]', 'code': 'invalid_value'}).",
+      "featured_products": [
+        "basic-hoodie-big-yale",
+        "big-yale-tri-blend-t-shirt"
+      ]
+    }
+  },
+  {
+    "video_path": "data/videos/ad_humble.mp4",
     "profile_path": "profiles/profile_student.json",
     "profile_name": "Maya Chen, Yale sophomore",
     "effectiveness_score": 5,
     "likely_response": "might shop",
-    "confidence": "high",
+    "confidence": "medium",
     "profile_fit": [
       {
-        "profile_point": "Proud current Yale undergraduate who wants to feel connected to campus",
-        "ad_evidence": "The ad shows a large group of young adults in Yale apparel, creating a visible sense of collective Yale identity.",
+        "profile_point": "Current Yale student who wants authentic insider Yale style rather than tourist gear",
+        "ad_evidence": "The ad shows young adults in simple navy and black Yale apparel, including the Basic Big Yale Hoodie and Big Yale Tri-Blend T-Shirt, in a confident group setting. However, the prominent generic YALE text is not clearly differentiated from bookstore merchandise.",
+        "fit": "partial"
+      },
+      {
+        "profile_point": "Preference for oversized, muted, vintage-feeling streetwear",
+        "ad_evidence": "The navy and black hoodies, muted palette, and cinematic presentation align with her color preferences and streetwear sensibility. The products themselves are shown as basic center-chest Yale designs, with no evidence of an oversized or vintage cut.",
+        "fit": "partial"
+      },
+      {
+        "profile_point": "Belonging to a friend group and buying matching gear for events",
+        "ad_evidence": "A large mixed group is repeatedly shown together wearing coordinated Yale apparel, strongly communicating collective identity and matching potential.",
         "fit": "strong"
       },
       {
-        "profile_point": "Prefers current, authentic streetwear over generic or touristy campus gear",
-        "ad_evidence": "The cinematic underpass setting, muted navy and black palette, and serious music-video-style presentation feel more fashion-oriented than a conventional bookstore ad. However, the garments themselves are mostly basic centered YALE designs.",
+        "profile_point": "Responds to current social-media presentation and classmates or peers wearing products",
+        "ad_evidence": "The short, landscape music-video-style edit uses dramatic close-ups, motion blur, and a young group, which could feel visually social and contemporary. The people are not identified as Yale students or shown in a recognizable campus/event context.",
         "fit": "partial"
       },
       {
-        "profile_point": "Likes oversized hoodies and crewnecks in muted colors",
-        "ad_evidence": "The featured navy and black hoodies match her preferred colors and hoodie-led wardrobe, though the description does not establish the fit as oversized or show a crewneck option.",
-        "fit": "partial"
-      },
-      {
-        "profile_point": "Buys after seeing classmates or admired peers wearing something",
-        "ad_evidence": "A group of students and young adults wear the products together, providing social proof and a sense of group adoption.",
-        "fit": "strong"
-      },
-      {
-        "profile_point": "Values belonging to her residential college and friend group, including matching event gear",
-        "ad_evidence": "The group presentation strongly communicates belonging and collective identity, but it does not connect the apparel to Pierson, The Game, college spirit days, or a specific friend-group occasion.",
-        "fit": "partial"
-      },
-      {
-        "profile_point": "Has a high price sensitivity and values money",
-        "ad_evidence": "Nothing in the ad communicates price, student discounts, a limited drop, value, or easy campus pickup.",
+        "profile_point": "High price sensitivity and value-for-money needs",
+        "ad_evidence": "Nothing in the ad communicates price, quality, durability, student pricing, discounts, or a limited drop.",
         "fit": "none"
       },
       {
-        "profile_point": "Does not know Campus Customs or how it differs from the Yale bookstore",
-        "ad_evidence": "There is no Campus Customs branding, store identification, product naming, or explanation of why these items are different from bookstore Yale gear.",
+        "profile_point": "Buys on her phone after seeing social media and needs an easy path to purchase",
+        "ad_evidence": "The 9.04-second video could catch attention, but it has no on-screen text, shop branding, URL, product details, or call to action. Its landscape format is also less native to TikTok and Instagram Reels than portrait video.",
         "fit": "none"
       },
       {
-        "profile_point": "Needs phone-friendly social content and skips ads that feel corporate quickly",
-        "ad_evidence": "The short, visually striking vertical-social-style concept and cinematic editing could earn attention, but the serious presentation may feel opaque or try-hard without a clear message. The soundtrack was not analysed, so this judgement does not cover its musical appeal or spoken content.",
+        "profile_point": "Supports local or student-run businesses and needs to know how Campus Customs differs from the Yale bookstore",
+        "ad_evidence": "Campus Customs is not named or visually branded, and nothing explains its local/student-run identity or differentiation.",
+        "fit": "none"
+      },
+      {
+        "profile_point": "Already owns a Yale sweatshirt and avoids cringe, try-hard marketing",
+        "ad_evidence": "The serious, confident tone may avoid overtly touristy cheerfulness, but the unexplained dramatic group presentation and generic Yale branding could feel performative rather than authentic. The existing Yale crewneck also reduces urgency to buy another basic Yale hoodie.",
         "fit": "partial"
       }
     ],
     "what_works": [
-      "The group styling gives the apparel social proof, which is especially relevant to a student influenced by classmates and friend-group fashion.",
-      "Muted navy and black pieces fit Maya’s preferred palette better than loud tourist merchandise.",
-      "The cinematic underpass setting and confident visual tone make basic Yale apparel feel more like streetwear than a standard bookstore product shot.",
-      "The hoodie and T-shirt are immediately recognizable as Yale merchandise."
+      "Muted navy and black color palette fits Maya's wardrobe.",
+      "The hoodie and T-shirt are recognizable, wearable Yale staples.",
+      "The group styling communicates belonging and matching friend-group gear.",
+      "The cinematic edit may stop the scroll more effectively than a conventional bookstore-style product ad.",
+      "The short runtime is suitable for social advertising."
     ],
     "what_misses": [
-      "There is no Campus Customs name or visible shop branding, so Maya cannot tell where to buy or why this is not ordinary bookstore gear.",
-      "There is no call to action, URL, shop handle, QR code, price, student discount, drop information, or pickup detail.",
-      "The basic centered YALE designs may not overcome her objection that she already owns a Yale crewneck and wants insider, current pieces rather than generic Yale branding.",
-      "The group is broad and anonymous rather than clearly showing admired current Yale students, a residential-college connection, or a specific event such as The Game.",
-      "The dramatic image of someone lying on the dirt is potentially distracting and could make the ad feel cryptic or less appealing, while the apparel benefits are not explained.",
-      "The soundtrack was not analysed, so no conclusion can be made about whether the audio helps or hurts the ad."
+      "Maya cannot tell that the apparel is from Campus Customs or how it differs from the Yale bookstore.",
+      "There is no price, student discount, drop information, event tie-in, pickup detail, or other reason to buy now.",
+      "There is no call to action or purchase path for a phone-first shopper.",
+      "The landscape format is a weaker fit for her primary TikTok and Instagram Reels habits.",
+      "The basic YALE designs may feel redundant because she already owns a Yale crewneck and could read as generic rather than insider.",
+      "The soundtrack was not analysed, so this judgement does not assess whether the music would strengthen or weaken the ad."
     ],
     "suggested_changes": [
-      "Add Campus Customs branding in the opening or final frame, along with a prominent @handle, URL, or QR code that opens the product page.",
-      "End with a direct mobile-first CTA such as “Shop the Big Yale drop at Campus Customs,” “Student discount,” or “Pick up on campus today.” Only include a discount or pickup claim if it is actually available.",
-      "Show product close-ups and fit details—especially an oversized navy hoodie, fabric, embroidery or print quality, and how students style it—so Maya can judge whether it is meaningfully different from her existing bookstore crewneck.",
-      "Introduce a limited Yale event or residential-college angle, such as coordinated The Game gear or a Pierson/student drop, if those products or campaigns exist.",
-      "Replace or shorten the ambiguous overhead shot of the person on the ground and use the first two seconds to show the garment, Campus Customs identity, or a real student styling moment.",
-      "Test a more natural, student-led caption or dialogue that explains the insider appeal; soundtrack impact should be evaluated separately because it was not analysed here."
+      "Re-edit a portrait 9:16 version for TikTok and Reels, with a stronger first-two-second product or outfit hook.",
+      "Add clear on-screen text such as \"Campus Customs,\" \"Student-run Yale gear,\" and a short URL or tappable-shop direction.",
+      "Show the actual hoodie and T-shirt in close-up, including fit, fabric, and styling on real Yale students rather than relying mainly on cinematic group shots.",
+      "Add a concrete trigger: a student discount, limited The Game drop, Pierson or residential-college colorway, or easy campus pickup.",
+      "Include price or a value message so Maya can judge whether it fits her budget.",
+      "Use a final frame with Campus Customs branding, product names, and an explicit CTA such as \"Shop the drop\" or \"Order for pickup before The Game.\"",
+      "Replace the ambiguous overhead shot of someone lying on the dirt with a recognizable Yale campus, residential-college, intramural, or game-day setting that feels authentic and less potentially off-putting."
     ],
-    "summary": "The ad could stop Maya’s scroll because the muted palette, hoodie styling, and collective Yale identity feel more fashion-led than a standard bookstore commercial. But it currently gives her no reason to choose Campus Customs, no price or student offer, and no way to buy, so add clear branding, a mobile CTA, and a distinctive fit or event-focused product story.",
+    "summary": "The ad could catch Maya's attention through its muted streetwear palette, short cinematic edit, and strong friend-group identity, but it currently looks like generic Yale apparel from an unknown source. Add Campus Customs branding, student pricing or a limited event drop, a phone-friendly CTA, and a more authentic Yale-student setting to turn interest into a purchase.",
     "video_analysis": {
       "video_path": "data/videos/ad_humble.mp4",
       "duration_seconds": 9.04,
+      "resolution": "1920x1080",
+      "orientation": "landscape",
       "frame_times_seconds": [
         0.5,
         1.5,
