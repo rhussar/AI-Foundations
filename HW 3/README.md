@@ -44,7 +44,10 @@ python build_catalog.py             # all photos; re-runs skip products already 
 ## Run the agent (Problem 3)
 
 ```bash
-python agent.py --image "data/test_images/image_01_true.jpeg"   # saves output/identify_product.json
+python agent.py --image "data/test_images/image_01_true.jpeg"   # one photo
+python agent.py --image data/test_images/*.jpeg                  # all four test photos at once (Problem 4)
 ```
+
+Results are saved to `output/identify_product.json` as a list with one `ProductIdentification` per photo.
 
 The scripts read `PORTKEY_API_KEY` from `HW 3/.env` or the workspace `.env`, or from the environment.

@@ -64,6 +64,14 @@ class AgentDeps:
     vision_model: str = MODEL
     reasoning_effort: str = "low"
     images_sent: int = field(default=0)
+    input_tokens: int = field(default=0)  # vision-step tokens, for cost reporting
+    output_tokens: int = field(default=0)
+
+    def record_usage(self, usage, images_per_request: int):
+        # usage.requests includes retries, and each retry re-sends the images.
+        self.images_sent += usage.requests * images_per_request
+        self.input_tokens += usage.input_tokens
+        self.output_tokens += usage.output_tokens
 
     def check_image_budget(self, count: int):
         if self.images_sent + count > MAX_IMAGES_PER_RUN:
@@ -154,7 +162,7 @@ async def describe_photo(photo: Path, deps: AgentDeps):
     result = await _describe_agent(deps.vision_model, deps.reasoning_effort).run(
         ["Customer photo:", BinaryContent(data=image, media_type="image/jpeg")]
     )
-    deps.images_sent += result.usage.requests * 1
+    deps.record_usage(result.usage, images_per_request=1)
     return result.output
 
 
@@ -172,7 +180,7 @@ async def compare_with_candidates(photo: Path, candidates: list[CatalogEntry], d
     images_per_request = 1 + len(candidates)
     deps.check_image_budget(images_per_request)
     result = await _match_agent(deps.vision_model, deps.reasoning_effort).run(content)
-    deps.images_sent += result.usage.requests * images_per_request
+    deps.record_usage(result.usage, images_per_request)
     return clean_verdict(result.output, [entry.product_id for entry in candidates])
 
 
@@ -247,7 +255,7 @@ def shortlist_products(observation: PhotoObservation, catalog: list[CatalogEntry
 
 async def identify_product(photo: Path, deps: AgentDeps):
     """Decide whether a Campus Customs product appears in the photo, and which one if it can be told."""
-    deps.images_sent = 0
+    deps.images_sent = deps.input_tokens = deps.output_tokens = 0
     observation = await describe_photo(photo, deps)
     candidates = shortlist_products(observation, deps.catalog, SHORTLIST_SIZE)
 

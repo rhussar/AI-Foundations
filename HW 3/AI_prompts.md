@@ -62,3 +62,15 @@ The first prompt only named the problem, so it didn't say how the prompt log sho
 **What was lacking after the first prompt:**
 
 ---
+
+## Problem 4: Test Identify on 4 Images
+
+**Prompt 1:**
+> Problem 4: Test identify on 4 images. Run the agent on four photos in data/test images. Each file name tells you the ground truth, whether it's true or not. Save the agent's output for all four images to output/identify_product.json. Each entry should match the identify.pydantic AI model you put in models.py. Then evaluate the performance. Was it good? Was it bad? Save the write-up in output/agent_evaluation.md.
+
+**Follow-up prompt (if needed):**
+>
+
+**What was lacking after the first prompt:**
+
+---
