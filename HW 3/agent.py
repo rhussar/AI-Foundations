@@ -51,10 +51,11 @@ SUMMARY_LENGTH = 300
 # --- The agent's abilities (logic in tools.py) ---------------------------------------------------
 
 
-async def identify_product(ctx: RunContext[tools.AgentDeps], image_path: str) -> ProductIdentification:
+async def identify_product(ctx: RunContext[tools.AgentDeps], reason: str, image_path: str) -> ProductIdentification:
     """Check a photo for Campus Customs products and say which one appears, if any.
 
     Args:
+        reason: One sentence on why this ability answers the request (recorded in the audit trail).
         image_path: Path to the photo, exactly as given in the request.
     """
     try:
@@ -64,10 +65,13 @@ async def identify_product(ctx: RunContext[tools.AgentDeps], image_path: str) ->
     return await tools.identify_product(photo, ctx.deps)
 
 
-async def judge_ad_effectiveness(ctx: RunContext[tools.AgentDeps], video_path: str, profile_path: str) -> AdEffectiveness:
+async def judge_ad_effectiveness(
+    ctx: RunContext[tools.AgentDeps], reason: str, video_path: str, profile_path: str
+) -> AdEffectiveness:
     """Judge how effective an ad video would be at getting one customer to shop at Campus Customs.
 
     Args:
+        reason: One sentence on why this ability answers the request (recorded in the audit trail).
         video_path: Path to the ad video, exactly as given in the request.
         profile_path: Path to the customer profile JSON file, exactly as given in the request.
     """
@@ -224,6 +228,9 @@ class RunAuditor:
         thoughts = [p.content for p in response.parts if isinstance(p, ThinkingPart) and p.content]
         thoughts += [p.content for p in response.parts if isinstance(p, TextPart) and p.content.strip()]
         calls = [p for p in response.parts if isinstance(p, ToolCallPart)]
+        if not thoughts:
+            # Portkey doesn't always return reasoning summaries, so each ability also takes a stated reason.
+            thoughts = [f"(stated reason) {call.args_as_dict()['reason']}" for call in calls if call.args_as_dict().get("reason")]
         self.pending = ([short(t, 1000) for t in thoughts], calls)
 
     async def tools_answered(self, request):

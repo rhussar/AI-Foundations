@@ -388,7 +388,7 @@ The second run costs one text call: the video analysis from the first run is cac
 | `iteration` | Order within the run; a run with more than 1 iteration shows the agent needed a retry |
 | `time` | When it happened (UTC), for ordering and for matching against Portkey's logs and costs |
 | `model` | Which model made the decision |
-| `thoughts` | The model's reasoning summary and any text it wrote: *why* it chose that tool |
+| `thoughts` | *Why* it chose that tool: the model's reasoning summary when Portkey returns one. The first real test showed Portkey returns none for these calls, which left `thoughts` empty. So each ability now also takes a required one-sentence `reason` argument, and the audit falls back to it (marked "(stated reason)"). Every entry now records the why |
 | `tool_name`, `arguments` | *What* it did, exactly. Wrong paths and wrong abilities are visible here |
 | `result_summary` | What came back, shortened to 300 characters (for example "FOUND yale-dad-t-shirt… 7 images sent", or "rejected, model asked to retry: No image found…"). The full result is in the output file |
 | `stop_reason` | `null` while the loop continues; then "final answer", "iteration limit" or "error: …". Shows how every run ended, including failures |
