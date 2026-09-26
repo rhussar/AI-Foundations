@@ -1,7 +1,7 @@
 """Campus Customs agent: the Pydantic AI entry point.
 
 The agent reads a request, picks the ability that answers it, and returns that ability's structured
-result. Its system prompt is the top part of prompts/prompts.md; the ability logic lives in tools.py.
+result. Its system prompt is the top part of prompts/prompt.md; the ability logic lives in tools.py.
 
 Ability 1 (Problems 3-4): is a Campus Customs product in this photo, and which one?
     python agent.py --image "data/test_images/image_01_true.jpeg"
@@ -34,8 +34,8 @@ from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 from pydantic_ai.usage import UsageLimits
 
 import tools
+from tools import ALLOWED_MODELS, MODEL, OUTPUT_DIR, build_agent_model, is_image_refused
 from models import AdEffectiveness, AuditEntry, ProductIdentification
-from portkey_client import ALLOWED_MODELS, MODEL, OUTPUT_DIR, build_agent_model, is_image_refused
 
 
 IDENTIFY_OUT_PATH = OUTPUT_DIR / "identify_product.json"

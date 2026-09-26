@@ -172,3 +172,15 @@ The first prompt only named the problem, so it didn't say how the prompt log sho
 **What was lacking after the first prompt:**
 
 ---
+
+## Problem 10: Submit the Zip
+
+**Prompt 1:**
+> Problem 10: I want you to submit a zip. Put everything in a folder named HW3. Do not put your real .env. Include a .env.example with the port, key, and API_key without a secret.
+
+**Follow-up prompt (if needed):**
+>
+
+**What was lacking after the first prompt:**
+
+---

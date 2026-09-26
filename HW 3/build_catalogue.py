@@ -1,14 +1,14 @@
 """Problem 2: build the Campus Customs product catalog.
 
 Turns every product photo in data/products into a CatalogEntry (see models.py) using a vision model
-through Portkey, and saves them all to output/catalog.json.
+through Portkey, and saves them all to output/catalogue.json.
 
 Speed: the photos are described concurrently (up to --concurrency requests in flight at once) instead
-of one at a time, each photo is shrunk before upload, and products already in catalog.json are skipped
+of one at a time, each photo is shrunk before upload, and products already in catalogue.json are skipped
 unless their photo changed. See output/harness.md.
 
-Run with:  python build_catalog.py
-Try a few first:  python build_catalog.py --limit 5
+Run with:  python build_catalogue.py
+Try a few first:  python build_catalogue.py --limit 5
 """
 
 import argparse
@@ -24,22 +24,22 @@ from pydantic_ai import Agent, BinaryContent
 from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 
 from models import CatalogEntry, ProductAttributes
-from portkey_client import (
+from tools import (
     ALLOWED_MODELS,
     DATA_DIR,
     MODEL,
     OUTPUT_DIR,
-    PROMPTS_DIR,
     ROOT,
     build_agent_model,
     is_image_refused,
+    load_prompt_section,
     shrink_image,
 )
 
 
-PROMPT_PATH = PROMPTS_DIR / "catalog_extract.md"
+PROMPT_SECTION = "build_catalogue: describe a product photo"  # in prompts/prompt.md
 DEFAULT_PRODUCTS_DIR = DATA_DIR / "products"
-DEFAULT_OUT_PATH = OUTPUT_DIR / "catalog.json"
+DEFAULT_OUT_PATH = OUTPUT_DIR / "catalogue.json"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 
 DEFAULT_CONCURRENCY = 16
@@ -88,7 +88,7 @@ def build_agent(model_name: str, reasoning_effort: str):
 
     return Agent(
         build_agent_model(model_name),
-        instructions=PROMPT_PATH.read_text(encoding="utf-8"),
+        instructions=load_prompt_section(PROMPT_SECTION),
         output_type=ProductAttributes,
         model_settings=settings,
         retries=2,
@@ -112,7 +112,7 @@ async def describe_product(agent: Agent, path: Path, sha256: str, semaphore: asy
 
 
 def entry_to_row(entry: CatalogEntry):
-    """Dump an entry with its ID fields first, so catalog.json reads naturally."""
+    """Dump an entry with its ID fields first, so catalogue.json reads naturally."""
     data = entry.model_dump()
     return {key: data[key] for key in ID_FIELDS} | {k: v for k, v in data.items() if k not in ID_FIELDS}
 
@@ -211,7 +211,7 @@ async def build_catalog(args):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Build output/catalog.json from the product photos.")
+    parser = argparse.ArgumentParser(description="Build output/catalogue.json from the product photos.")
     parser.add_argument("--products-dir", type=Path, default=DEFAULT_PRODUCTS_DIR)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT_PATH)
     parser.add_argument("--model", choices=ALLOWED_MODELS, default=MODEL)

@@ -7,14 +7,14 @@ Campus Customs sells Yale merch. HW 3 builds an agent that answers two growth qu
 All model calls go through Portkey with `PORTKEY_API_KEY`, using one of `gpt-5.6-luna` (the default, and what the course budget assumes), `gpt-5.6-terra`, `gpt-5.6-sol` or `gpt-6-astra`. The work is submitted as `hw3.zip`; the last problem lists which files to include.
 
 This folder contains:
-- `AI_prompts.md` for recording prompts used during Homework 3
-- `portkey_client.py`, the shared Portkey/OpenAI client every HW 3 script imports
+- `AI_prompt.md` for recording prompts used during Homework 3
+- `tools.py` also holds the shared Portkey connection; `python tools.py` checks the key and the connection
 - `models.py`, the Pydantic models shared by the scripts (`CatalogEntry`, `ProductIdentification`, `CustomerProfile`, `AdEffectiveness`)
-- `build_catalog.py` (Problem 2), which turns the product photos into `output/catalog.json`
-- `agent.py` (Problems 3-5), the Campus Customs Pydantic AI agent; its tool logic is in `tools.py`, and all of its instructions are in `prompts/prompts.md`
+- `build_catalogue.py` (Problem 2), which turns the product photos into `output/catalogue.json`
+- `agent.py` (Problems 3-5), the Campus Customs Pydantic AI agent; its tool logic is in `tools.py`, and all of its instructions are in `prompts/prompt.md`
 - `profiles/` for customer profile JSON files (`profile_student.json`, `profile_parent.json`), built by `make_profiles.py` (Problem 6)
 - `prompts/` for prompt files
-- `output/` for generated outputs: `catalog.json`, `identify_product.json`, `ad_effectiveness.json`, `audit_trail.json` (one entry per agent loop iteration), `agent_evaluation.md`, and `harness.md`, which explains the whole system
+- `output/` for generated outputs: `catalogue.json`, `identify_product.json`, `ad_effectiveness.json`, `audit_trail.json` (one entry per agent loop iteration), `agent_evaluation.md`, and `harness.md`, which explains the whole system
 - `data.zip`, the provided data (unzip it here to get `data/`)
 
 ## Data
@@ -32,14 +32,14 @@ unzip -o data.zip
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python portkey_client.py   # checks the key and the connection to Portkey
+python tools.py            # checks the key and the connection to Portkey
 ```
 
 ## Build the catalog (Problem 2)
 
 ```bash
-python build_catalog.py --limit 5   # cheap test on 5 photos
-python build_catalog.py             # all photos; re-runs skip products already catalogued
+python build_catalogue.py --limit 5   # cheap test on 5 photos
+python build_catalogue.py             # all photos; re-runs skip products already catalogued
 ```
 
 ## Run the agent (Problem 3)

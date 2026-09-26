@@ -7,7 +7,7 @@ Run with:  python make_profiles.py
 """
 
 from models import CustomerProfile
-from portkey_client import ROOT
+from tools import ROOT
 
 
 PROFILES_DIR = ROOT / "profiles"

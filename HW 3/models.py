@@ -1,7 +1,7 @@
 """Pydantic models shared by the HW 3 scripts.
 
-CatalogEntry is one product in output/catalog.json. The model fills in ProductAttributes from the
-photo (it is the Pydantic AI agent's output_type); build_catalog.py adds the fields that come from the
+CatalogEntry is one product in output/catalogue.json. The model fills in ProductAttributes from the
+photo (it is the Pydantic AI agent's output_type); build_catalogue.py adds the fields that come from the
 file itself, so the model is never asked to invent an ID or a path.
 
 ProductIdentification is the agent's answer to "is a Campus Customs product in this photo, and which
@@ -79,7 +79,7 @@ class ProductAttributes(BaseModel):
 
 
 class CatalogEntry(ProductAttributes):
-    """One row of output/catalog.json."""
+    """One row of output/catalogue.json."""
 
     product_id: str = Field(description="File name without extension; the stable key for this product.")
     image_file: str = Field(description="Path to the product photo, relative to the HW 3 folder.")

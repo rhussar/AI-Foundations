@@ -13,11 +13,11 @@ Campus Customs sells Yale merchandise. The agent answers two growth questions:
 | **Identify a product** | Is someone in this photo wearing a Campus Customs product, and which one? (Tells us who might be worth outreach) | `python agent.py --image PHOTO [PHOTO ...]` | `output/identify_product.json` |
 | **Judge an ad** | How likely is this ad video to get this customer to shop at Campus Customs, and what should change? | `python agent.py --video VIDEO --profile PROFILE [PROFILE ...]` | `output/ad_effectiveness.json` |
 
-Both abilities depend on a **product catalog**. `build_catalog.py` has a vision model describe each of the shop's 102 product photos once, and saves the results to `output/catalog.json`. Customer profiles are built by `make_profiles.py` into `profiles/`.
+Both abilities depend on a **product catalog**. `build_catalogue.py` has a vision model describe each of the shop's 102 product photos once, and saves the results to `output/catalogue.json`. Customer profiles are built by `make_profiles.py` into `profiles/`.
 
 **How a request flows:**
 1. `agent.py` checks the input files exist and are valid, before spending anything.
-2. The agent, a Pydantic AI agent whose system prompt is the top of `prompts/prompts.md`, reads the request and picks one ability.
+2. The agent, a Pydantic AI agent whose system prompt is the top of `prompts/prompt.md`, reads the request and picks one ability.
 3. The ability's tools, in `tools.py`, do the work: a few focused model calls plus plain code.
 4. The ability's structured result is the final answer, returned exactly as the tool built it.
 5. Every loop iteration is appended to `output/audit_trail.json`.
@@ -59,7 +59,7 @@ All model calls go through **Portkey** with `PORTKEY_API_KEY`, using `gpt-5.6-lu
 
 ## 4. Safety rules
 
-The system prompt, the top of `prompts/prompts.md`, opens with a safety section. The model calls that actually see images, video and audio carry the same key rules. Where a rule can be checked in code, it is:
+The system prompt, the top of `prompts/prompt.md`, opens with a safety section. The model calls that actually see images, video and audio carry the same key rules. Where a rule can be checked in code, it is:
 
 | Rule | Enforced by |
 | --- | --- |
@@ -107,7 +107,7 @@ Every run appends to `output/audit_trail.json`, one `AuditEntry` per agent loop 
 
 ## Problem 2: Building the product catalog
 
-`build_catalog.py` looks at every product photo in `data/products/` (102 of them) and writes one structured entry per product to `output/catalog.json`. It uses a vision model (`gpt-5.6-luna` by default) through Portkey.
+`build_catalogue.py` looks at every product photo in `data/products/` (102 of them) and writes one structured entry per product to `output/catalogue.json`. It uses a vision model (`gpt-5.6-luna` by default) through Portkey.
 
 ### How the build is sped up
 
@@ -130,7 +130,7 @@ In the real run through Portkey, the concurrent loop described **94 photos in 23
 
 **2. Smaller uploads.** Each photo is shrunk so its longest side is at most 768 px before it is sent. That is still enough to read small left-chest text like "Yale SCHOOL OF MEDICINE", and it keeps both the upload size and the model's image tokens down.
 
-**3. Skip work already done.** `catalog.json` stores a fingerprint (SHA-256 hash) of each photo. A re-run skips every product whose photo has not changed, so re-running after adding five photos makes five requests, not 102. `--no-cache` forces a full rebuild.
+**3. Skip work already done.** `catalogue.json` stores a fingerprint (SHA-256 hash) of each photo. A re-run skips every product whose photo has not changed, so re-running after adding five photos makes five requests, not 102. `--no-cache` forces a full rebuild.
 
 **4. A cheap, quick model.** Cataloguing clean product shots is an easy vision task, so the default is `gpt-5.6-luna`, the course's budget model, with reasoning effort `low`.
 
@@ -176,7 +176,7 @@ Fields that can't be seen in a photo, such as price, sizes and fabric, are left 
 
 ## Problem 3: Product identification
 
-`agent.py` is the Campus Customs agent. It's a Pydantic AI agent whose system prompt is `prompts/prompts.md`. Its first ability answers: *is someone in this photo wearing a Campus Customs product, and which one?*
+`agent.py` is the Campus Customs agent. It's a Pydantic AI agent whose system prompt is `prompts/prompt.md`. Its first ability answers: *is someone in this photo wearing a Campus Customs product, and which one?*
 
 ```bash
 python agent.py --image "data/test_images/image_01_true.jpeg"
@@ -267,11 +267,11 @@ python agent.py --video "data/videos/ad_humble.mp4" --profile "profiles/profile_
 
 The structured answer goes to `output/ad_effectiveness.json`, as a list with one entry per profile. Several `--profile` files can be given; the video is analysed once and judged for each.
 
-**One prompt file.** Every instruction the agent uses lives in `prompts/prompts.md`:
+**One prompt file.** Every instruction the agent uses lives in `prompts/prompt.md`:
 - The top part is the agent's system prompt. It now describes both abilities and when to use each.
 - Below the line `# Tool step instructions`, each model call inside the tools has its own `##` section, which the tool loads by its heading.
 
-The photo steps from Problem 3 were moved into the same file, so there's no second agent prompt file. (`prompts/catalog_extract.md` belongs to `build_catalog.py`, the separate Problem 2 script, not to the agent.)
+The photo steps from Problem 3 were moved into the same file, so there's no second agent prompt file. `build_catalogue.py`, the separate Problem 2 script, loads its instructions from a section of the same file.
 
 ### The tools for the video + profile job
 
@@ -375,7 +375,7 @@ The second run costs one text call: the video analysis from the first run is cac
 
 ## Problem 8: Safety rules and the audit trail
 
-**Safety rules.** A "Safety rules for images and videos" section now sits in the system-prompt part of `prompts/prompts.md`, ahead of the other rules, so the agent loads it on every run. The four tool steps that see photos, video or audio each end with a one-line safety reminder, because those are the model calls that actually look at people. Section 4 above lists each rule and how it's enforced. New in code for this problem:
+**Safety rules.** A "Safety rules for images and videos" section now sits in the system-prompt part of `prompts/prompt.md`, ahead of the other rules, so the agent loads it on every run. The four tool steps that see photos, video or audio each end with a one-line safety reminder, because those are the model calls that actually look at people. Section 4 above lists each rule and how it's enforced. New in code for this problem:
 - `resolve_path` refuses files outside the workspace.
 - The agent loop has a hard cap of 4 iterations.
 
