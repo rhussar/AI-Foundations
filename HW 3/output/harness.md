@@ -98,7 +98,7 @@ The agent reads the request and calls its `identify_product` tool with the photo
 ### What makes it efficient
 
 - **No image-by-image catalog search.** Comparing the photo with each of 99 catalog photos would take 99 image comparisons. Instead, the catalog built in Problem 2 is searched as text, in code, for free. Only the 5 most likely products are ever looked at as images.
-- **Smart scoring.** The shortlist gives most weight to printed words and logos, and weights each word by how rare it is in the catalog. "DAD", "BULLDOGS" or "DAVENPORT" count far more than "YALE", which is on nearly everything. Garment type, color and design placement break ties. Tests against the real catalog put the right product in the top 5 each time, next to the look-alikes that step 3 has to tell apart:
+- **Smart scoring.** The shortlist gives most weight to printed words and logos, and weights each word by how rare it is in the catalog. "DAD", "BULLDOGS" or "DAVENPORT" count far more than "YALE", which is on nearly everything. Garment type, color and design placement break ties. Offline tests with sample photo readings against the real catalog put the right product in the top 5 each time, next to the look-alikes that step 3 has to tell apart:
   - Yale Dad tee → `yale-dad-t-shirt`, `yale-dad-hoodie`, `yale-dad-crewneck`, …
   - Navy "YALE BULLDOGS" long-sleeve → `dry-zone-long-sleeve`, `yale-maplehouse-diana-mockneck`, `ua-mens-tech-l-s-2-0`, …
   - Balenciaga tee → no candidates, so the agent stops after 1 image
@@ -108,6 +108,21 @@ The agent reads the request and calls its `identify_product` tool with the photo
   - Step 1 may retry once, and step 3 never retries, so the worst case is 8. A check in the code blocks any send that would go over 10.
 - **Right-sized images.** The customer photo is sent at up to 1024 px, because its printing is small, angled and partly hidden. The flat catalog photos only need 512 px.
 - **Two vision calls, one cheap routing call.** The agent's own call only routes the request, and it sends no images. Everything uses `gpt-5.6-luna` by default. `--vision-model gpt-5.6-terra` switches the photo checks to a smarter model if harder photos need it.
+
+### Results on the four test photos
+
+Run for real through Portkey with `gpt-5.6-luna`:
+
+| Photo | Truth | Agent's answer | Confidence | Images sent |
+| --- | --- | --- | --- | --- |
+| `image_01_true.jpeg` (man in grey "YALE UNIVERSITY DAD" tee) | product | ✅ `yale-dad-t-shirt` | high | 7 |
+| `image_02_false.jpeg` (woman in "ESSENTIALS" hoodie) | no product | ✅ none; stopped after step 1 | high | 1 |
+| `image_03_true.jpeg` (man in navy "YALE BULLDOGS" long-sleeve, arm raised) | product | ✅ `dry-zone-long-sleeve` | high | 7 |
+| `image_04_false.jpeg` (navy Balenciaga tee in front of a Yale gate) | no product | ✅ none; stopped after step 1 | high | 1 |
+
+**4 of 4 correct**, with at most 7 images per photo, and just 1 for the two photos with no Yale branding. Photo 3 is the hard one: the shortlist held two navy "YALE BULLDOGS" long-sleeves, and the side-by-side step picked the right one. `output/identify_product.json` holds the full answer for `image_01_true.jpeg`.
+
+One thing to watch: for photo 1 the model read the design as "center chest", while the catalog calls it "full front". The right product still came first in the shortlist, but the Dad crewneck and hoodie look-alikes dropped out of the top 5. Placement is a small part of the score for this reason, and the printed words carry most of it.
 
 ### Guardrails
 
